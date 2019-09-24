@@ -82,7 +82,8 @@ DataSearch.propTypes = {
   onQueryChange: func,
   react,
   theme: object,
-  className: string
+  className: string,
+  loader: object
 };
 
 DataSearch.defaultProps = {
