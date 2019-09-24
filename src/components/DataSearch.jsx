@@ -15,10 +15,24 @@ import {
   any,
   react
 } from '../utils/types';
+import Input from './Input';
+import Container from '../styles/Container';
+import Title from '../styles/Title';
+import { getClassName } from '../utils/helper';
 
 class DataSearch extends Component {
   render() {
-    return <div></div>;
+    const { style, className, title, innerClass } = this.props;
+    return (
+      <Container style={style} className={className}>
+        {title && (
+          <Title className={getClassName(innerClass, 'title') || null}>
+            {title}
+          </Title>
+        )}
+        <Input />
+      </Container>
+    );
   }
 }
 
@@ -66,7 +80,9 @@ DataSearch.propTypes = {
   beforeValueChange: func,
   onValueSelected: func,
   onQueryChange: func,
-  react
+  react,
+  theme: object,
+  className: string
 };
 
 DataSearch.defaultProps = {
@@ -79,7 +95,8 @@ DataSearch.defaultProps = {
   highlight: false,
   queryFormat: 'or',
   showVoiceSearch: false,
-  searchOperators: false
+  searchOperators: false,
+  className: ''
 };
 
 export default DataSearch;
