@@ -22,7 +22,12 @@ import Input, {
 } from './Input';
 import Container from '../styles/Container';
 import Title from '../styles/Title';
-import { getClassName, getComponent, hasCustomRenderer } from '../utils/helper';
+import {
+  deepGet,
+  getClassName,
+  getComponent,
+  hasCustomRenderer
+} from '../utils/helper';
 import Downshift from 'downshift';
 import Icons from './Icons';
 import Loader from './Loader';
@@ -39,7 +44,7 @@ class DataSearch extends Component {
 
     this.state = {
       currentValue,
-      suggestions: [],
+      suggestionsList: [],
       isOpen: false
     };
 
@@ -50,20 +55,24 @@ class DataSearch extends Component {
       credentials
     });
 
-    this.searchBase.subscribeToStateChanges(() => {
-      this.forceUpdate();
-    });
+    this.searchBase.subscribeToStateChanges(
+      ({ suggestions }) => {
+        this.setState({
+          suggestionsList: deepGet(suggestions, ['next', 'data']) || []
+        });
+      },
+      ['suggestions']
+    );
   }
 
   getComponent = (downshiftProps = {}) => {
     const { error, isLoading } = this.props;
-    const { currentValue } = this.state;
+    const { currentValue, suggestionsList } = this.state;
     const data = {
       error,
       loading: isLoading,
       downshiftProps,
-      data: this.parsedSuggestions,
-      rawData: suggestions || [],
+      data: suggestionsList,
       value: currentValue,
       triggerClickAnalytics: this.triggerClickAnalytics
     };
@@ -88,11 +97,12 @@ class DataSearch extends Component {
   };
 
   onInputChange = e => {
-    if (!this.state.isOpen) {
-      this.setState({
-        isOpen: true
-      });
+    if (this.props.value) {
+      if (this.props.onChange)
+        this.props.onChange(e.target.value, this.triggerQuery, e);
+      return;
     }
+    this.setState({ isOpen: true, currentValue: e.target.value });
     this.searchBase.setValue(e.target.value, {
       triggerSuggestionsQuery: true
     });
@@ -132,10 +142,13 @@ class DataSearch extends Component {
       renderError,
       renderNoSuggestion
     } = this.props;
-    const { isOpen, isLoading, error } = this.state;
-    const currentValue = this.searchBase.value;
-    const suggestionsList = this.searchBase.suggestions.data;
-    console.log({ suggestionsList });
+    const {
+      isOpen,
+      isLoading,
+      error,
+      currentValue,
+      suggestionsList
+    } = this.state;
     return (
       <Container style={style} className={className}>
         {title && (
@@ -321,7 +334,6 @@ DataSearch.propTypes = {
   customQuery: object,
   defaultQuery: object,
   beforeValueChange: func,
-  onValueSelected: func,
   onQueryChange: func,
   react,
   theme: object,

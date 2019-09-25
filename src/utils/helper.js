@@ -24,3 +24,6 @@ export const hasCustomRenderer = (props = {}) => {
   const { render, children } = props;
   return isFunction(children) || isFunction(render);
 };
+
+export const deepGet = (obj, keys) =>
+  keys.reduce((xs, x) => (xs && xs[x] ? xs[x] : null), obj);
