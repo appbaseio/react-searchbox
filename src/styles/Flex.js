@@ -1,25 +1,24 @@
 import styled from '@emotion/styled/macro';
-import { css } from 'emotion/macro';
 
-const leftLabel = css`
+const leftLabel = `
   flex-direction: row;
   align-items: center;
 `;
 
-const rightLabel = css`
+const rightLabel = `
   flex-direction: row-reverse;
   align-items: center;
 `;
 
-const topLabel = css`
+const topLabel = `
   flex-direction: column;
 `;
 
-const bottomLabel = css`
+const bottomLabel = `
   flex-direction: column-reverse;
 `;
 
-const border = ({ theme: { colors } }) => css`
+const border = ({ theme: { colors } }) => `
   border: 1px solid ${colors.borderColor || '#ccc'};
 `;
 
@@ -37,28 +36,28 @@ const Flex = styled.div`
 
   ${props =>
     props.justifyContent &&
-    css`
+    `
       justify-content: ${props.justifyContent};
     `};
   ${props =>
     props.alignItems &&
-    css`
+    `
       align-items: ${props.alignItems};
     `};
 
   ${props =>
     props.flex &&
-    css`
+    `
       flex: ${props.flex};
     `};
   ${props =>
     props.direction &&
-    css`
+    `
       flex-direction: ${props.direction};
     `};
   ${props =>
     props.basis &&
-    css`
+    `
       flex-basis: ${props.basis};
     `};
 

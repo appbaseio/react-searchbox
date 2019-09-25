@@ -16,7 +16,10 @@ import {
   react,
   themePreset
 } from '../utils/types';
-import Input, { suggestionsContainer, suggestions as suggestionsCss } from './Input';
+import Input, {
+  suggestionsContainer,
+  suggestions as suggestionsCss
+} from './Input';
 import Container from '../styles/Container';
 import Title from '../styles/Title';
 import { getClassName, getComponent, hasCustomRenderer } from '../utils/helper';
@@ -87,7 +90,7 @@ class DataSearch extends Component {
   onInputChange = e => {
     if (!this.state.isOpen) {
       this.setState({
-        isOpen: true,
+        isOpen: true
       });
     }
     this.searchBase.setValue(e.target.value, {

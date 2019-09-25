@@ -1,17 +1,16 @@
-import { css } from 'emotion/macro';
 import styled from '@emotion/styled/macro';
 
-const left = css`
+const left = `
   padding-left: 12px;
   left: 0;
 `;
 
-const right = css`
+const right = `
   padding-right: 12px;
   right: 0;
 `;
 
-const clear = css`
+const clear = `
   padding-right: 32px;
   right: 0;
   top: calc(50% - 9px);
