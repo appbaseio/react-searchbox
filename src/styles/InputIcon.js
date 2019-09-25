@@ -1,5 +1,5 @@
-import { css } from '@emotion/core';
-import styled from '@emotion/styled';
+import { css } from 'emotion/macro';
+import styled from '@emotion/styled/macro';
 
 const left = css`
   padding-left: 12px;

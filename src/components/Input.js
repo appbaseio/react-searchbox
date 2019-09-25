@@ -1,11 +1,11 @@
-import { css } from '@emotion/core';
-import styled from '@emotion/styled';
+import { css } from 'emotion/macro';
+import styled from '@emotion/styled/macro';
 
 const alertBorder = ({ theme }) => css`
   border: 1px solid ${theme.colors.alertColor};
 `;
 
-const input = css`
+const input = `
   width: 100%;
   height: 42px;
   padding: 8px 12px;
@@ -33,8 +33,8 @@ const darkInput = ({ theme }) => css`
   }
 `;
 
-const Input = styled('input')`
-  ${input};
+const Input = styled.input`
+  ${input}
   ${({ themePreset }) => themePreset === 'dark' && darkInput};
 
   ${props =>

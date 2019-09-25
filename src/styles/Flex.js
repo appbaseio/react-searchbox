@@ -1,5 +1,5 @@
-import styled from '@emotion/styled';
-import { css } from '@emotion/core';
+import styled from '@emotion/styled/macro';
+import { css } from 'emotion/macro';
 
 const leftLabel = css`
   flex-direction: row;
@@ -23,7 +23,7 @@ const border = ({ theme: { colors } }) => css`
   border: 1px solid ${colors.borderColor || '#ccc'};
 `;
 
-const Flex = styled('div')`
+const Flex = styled.div`
   display: ${props => (props.inline ? 'inline-flex' : 'flex')};
   ${props =>
     (props.labelPosition === 'left' || props.iconPosition === 'right') &&

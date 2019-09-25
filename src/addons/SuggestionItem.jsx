@@ -1,5 +1,6 @@
 /** @jsx jsx */
-import { jsx, css } from '@emotion/core';
+import { jsx } from '@emotion/core';
+import { css } from 'emotion/macro';
 import Highlight from 'react-highlight-words';
 import Flex from '../styles/Flex';
 

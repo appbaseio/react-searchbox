@@ -1,5 +1,5 @@
 import React from 'react';
-import types from '@appbaseio/reactivecore/lib/utils/types';
+import { func } from '../utils/types';
 
 const CancelSvg = ({ onClick }) => (
   <svg
@@ -21,7 +21,7 @@ const CancelSvg = ({ onClick }) => (
 );
 
 CancelSvg.propTypes = {
-  onClick: types.func
+  onClick: func
 };
 
 export default CancelSvg;
