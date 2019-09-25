@@ -1,6 +1,6 @@
-import React from 'react';
+/** @jsx jsx */
+import { jsx, css } from '@emotion/core';
 import Highlight from 'react-highlight-words';
-import { css } from '@emotion/core';
 import Flex from '../styles/Flex';
 
 const highlightStyle = {

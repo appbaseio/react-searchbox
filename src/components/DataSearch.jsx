@@ -16,7 +16,7 @@ import {
   react,
   themePreset
 } from '../utils/types';
-import Input, { suggestionsContainer } from './Input';
+import Input, { suggestionsContainer, suggestions as suggestionsCss } from './Input';
 import Container from '../styles/Container';
 import Title from '../styles/Title';
 import { getClassName, getComponent, hasCustomRenderer } from '../utils/helper';
@@ -26,10 +26,12 @@ import Loader from './Loader';
 import Error from './Error';
 import SuggestionItem from '../addons/SuggestionItem';
 import NoSuggestions from './NoSuggestions';
+import Searchbase from '@appbaseio/searchbase';
 
 class DataSearch extends Component {
   constructor(props) {
     super(props);
+    const { index, url, dataField, credentials } = props;
     const currentValue = props.value || props.defaultValue || '';
 
     this.state = {
@@ -37,6 +39,17 @@ class DataSearch extends Component {
       suggestions: [],
       isOpen: false
     };
+
+    this.searchBase = new Searchbase({
+      index,
+      url,
+      dataField,
+      credentials
+    });
+
+    this.searchBase.subscribeToStateChanges(() => {
+      this.forceUpdate();
+    });
   }
 
   getComponent = (downshiftProps = {}) => {
@@ -53,9 +66,42 @@ class DataSearch extends Component {
     };
     return getComponent(data, this.props);
   };
+
   get hasCustomRenderer() {
     return hasCustomRenderer(this.props);
   }
+
+  withTriggerQuery = func => {
+    if (func) {
+      return e => func(e, this.triggerQuery);
+    }
+    return undefined;
+  };
+
+  triggerQuery = () => {
+    this.searchBase.setValue(this.props.value, {
+      triggerQuery: true
+    });
+  };
+
+  onInputChange = e => {
+    if (!this.state.isOpen) {
+      this.setState({
+        isOpen: true,
+      });
+    }
+    this.searchBase.setValue(e.target.value, {
+      triggerSuggestionsQuery: true
+    });
+  };
+
+  getBackgroundColor = (highlightedIndex, index) => {
+    const isDark = this.props.themePreset === 'dark';
+    if (isDark) {
+      return highlightedIndex === index ? '#555' : '#424242';
+    }
+    return highlightedIndex === index ? '#eee' : '#fff';
+  };
 
   render() {
     const {
@@ -83,8 +129,10 @@ class DataSearch extends Component {
       renderError,
       renderNoSuggestion
     } = this.props;
-    const { isOpen, currentValue, isLoading, error } = this.state;
-    const suggestionsList = this.parseSuggestions;
+    const { isOpen, isLoading, error } = this.state;
+    const currentValue = this.searchBase.value;
+    const suggestionsList = this.searchBase.suggestions.data;
+    console.log({ suggestionsList });
     return (
       <Container style={style} className={className}>
         {title && (
@@ -114,19 +162,16 @@ class DataSearch extends Component {
                   showIcon={showIcon}
                   showClear={showClear}
                   iconPosition={iconPosition}
-                  innerRef={c => {
-                    this._inputRef = c;
-                  }}
                   {...getInputProps({
                     className: getClassName(innerClass, 'input'),
                     placeholder: placeholder,
-                    value: currentValue === null ? '' : currentValue
-                    // onChange: this.onInputChange,
-                    // onBlur: this.withTriggerQuery(onBlur),
+                    value: currentValue === null ? '' : currentValue,
+                    onChange: this.onInputChange,
+                    onBlur: this.withTriggerQuery(onBlur),
                     // onFocus: this.handleFocus,
-                    // onKeyPress: this.withTriggerQuery(onKeyPress),
+                    onKeyPress: this.withTriggerQuery(onKeyPress),
                     // onKeyDown: e => this.handleKeyDown(e, highlightedIndex),
-                    // onKeyUp: this.withTriggerQuery(onKeyUp)
+                    onKeyUp: this.withTriggerQuery(onKeyUp)
                   })}
                   themePreset={themePreset}
                 />
@@ -165,7 +210,7 @@ class DataSearch extends Component {
                 />
                 {!this.hasCustomRenderer && isOpen && suggestionsList.length ? (
                   <ul
-                    className={`${suggestions(
+                    className={`${suggestionsCss(
                       themePreset,
                       theme
                     )} ${getClassName(innerClass, 'list')}`}
