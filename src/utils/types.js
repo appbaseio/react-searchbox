@@ -45,3 +45,5 @@ export const queryFormat = PropTypes.oneOf(['and', 'or']);
 export const fuzziness = PropTypes.oneOf([0, 1, 2, 'AUTO']);
 
 export const title = PropTypes.oneOfType([string, any]);
+
+export const themePreset = PropTypes.oneOf(['dark', 'light']);
