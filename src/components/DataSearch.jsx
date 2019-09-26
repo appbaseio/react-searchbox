@@ -64,7 +64,8 @@ class DataSearch extends Component {
     this.state = {
       currentValue,
       suggestionsList: [],
-      isOpen: false
+      isOpen: false,
+      error: null
     };
 
     const transformQuery = query => {
@@ -95,7 +96,10 @@ class DataSearch extends Component {
     this.searchBase.onQueryChange = onQueryChange;
     this.searchBase.onValueChange = onValueChange;
     this.searchBase.onSuggestions = onSuggestions;
-    this.searchBase.onError = onError;
+    this.searchBase.onError = error => {
+      this.setState({ error });
+      if (onError) onError(error);
+    };
     this.searchBase.onResults = onResults;
 
     if (onChange) onChange(currentValue, this.triggerQuery);
@@ -239,13 +243,8 @@ class DataSearch extends Component {
       icon,
       value
     } = this.props;
-    const {
-      isOpen,
-      isLoading,
-      error,
-      currentValue,
-      suggestionsList
-    } = this.state;
+    const isLoading = this.searchBase.suggestionsRequestPending;
+    const { isOpen, error, currentValue, suggestionsList } = this.state;
     return (
       <Container style={style} className={className}>
         {title && (
@@ -444,7 +443,6 @@ DataSearch.propTypes = {
   onResults: func,
   innerClass: object,
   style: object,
-  customQuery: object,
   defaultQuery: func,
   beforeValueChange: func,
   onQueryChange: func,
