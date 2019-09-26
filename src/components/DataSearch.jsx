@@ -191,6 +191,15 @@ class DataSearch extends Component {
     }
   };
 
+  handleFocus = event => {
+    this.setState({
+      isOpen: true
+    });
+    if (this.props.onFocus) {
+      this.props.onFocus(event, this.triggerQuery);
+    }
+  };
+
   render() {
     const {
       style,
@@ -260,9 +269,8 @@ class DataSearch extends Component {
                     value: currentValue === null ? '' : currentValue,
                     onChange: this.onInputChange,
                     onBlur: this.withTriggerQuery(onBlur),
-                    // onFocus: this.handleFocus,
+                    onFocus: this.handleFocus,
                     onKeyPress: this.withTriggerQuery(onKeyPress),
-                    // onKeyDown: e => this.handleKeyDown(e, highlightedIndex),
                     onKeyUp: this.withTriggerQuery(onKeyUp)
                   })}
                   themePreset={themePreset}
@@ -437,6 +445,7 @@ DataSearch.propTypes = {
 };
 
 DataSearch.defaultProps = {
+  placeholder: 'Search',
   analytics: false,
   showIcon: true,
   iconPosition: 'right',
