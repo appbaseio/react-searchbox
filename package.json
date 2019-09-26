@@ -2,6 +2,7 @@
   "name": "react-searchbox",
   "version": "0.1.0",
   "private": true,
+  "author": "anujshah584@gmail.com",
   "devDependencies": {
     "prettier": "^1.18.2",
     "eslint-plugin-react-hooks": "^2.0.1"

@@ -13,7 +13,6 @@ import {
   fuzziness,
   title,
   any,
-  react,
   themePreset
 } from '../utils/types';
 import Input, {
@@ -102,9 +101,21 @@ class DataSearch extends Component {
     if (onChange) onChange(currentValue, this.triggerQuery);
   }
 
+  componentDidUpdate(prevProps, prevState, snapshot) {
+    const { dataField, headers, fuzziness, nestedField } = this.props;
+    this._applySetter(prevProps.dataField, dataField, 'setDataField');
+    this._applySetter(prevProps.headers, headers, 'setHeaders');
+    this._applySetter(prevProps.fuzziness, fuzziness, 'setFuzziness');
+    this._applySetter(prevProps.nestedField, nestedField, 'setNestedField');
+  }
+
   componentWillUnmount() {
     this.searchBase.unsubscribeToStateChanges(this.setStateValue);
   }
+
+  _applySetter = (prev, next, setterFunc) => {
+    if (prev !== next) this.searchBase[setterFunc](next);
+  };
 
   setStateValue = ({ suggestions }) => {
     this.setState({
@@ -225,7 +236,8 @@ class DataSearch extends Component {
       loader,
       renderError,
       renderNoSuggestion,
-      icon
+      icon,
+      value
     } = this.props;
     const {
       isOpen,
@@ -266,12 +278,17 @@ class DataSearch extends Component {
                   {...getInputProps({
                     className: getClassName(innerClass, 'input'),
                     placeholder: placeholder,
-                    value: currentValue === null ? '' : currentValue,
+                    value: value
+                      ? value
+                      : currentValue === null
+                      ? ''
+                      : currentValue,
                     onChange: this.onInputChange,
                     onBlur: this.withTriggerQuery(onBlur),
                     onFocus: this.handleFocus,
                     onKeyPress: this.withTriggerQuery(onKeyPress),
-                    onKeyUp: this.withTriggerQuery(onKeyUp)
+                    onKeyUp: this.withTriggerQuery(onKeyUp),
+                    onKeyDown: this.withTriggerQuery(onKeyDown)
                   })}
                   themePreset={themePreset}
                 />
@@ -431,7 +448,6 @@ DataSearch.propTypes = {
   defaultQuery: func,
   beforeValueChange: func,
   onQueryChange: func,
-  react,
   theme: object,
   className: string,
   loader: object,
