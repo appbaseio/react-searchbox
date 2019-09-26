@@ -143,14 +143,18 @@ class DataSearch extends Component {
     });
   };
 
-  onInputChange = e => {
+  onInputChange = event => {
+    this.setValue({ value: event.target.value, event });
+  };
+
+  setValue = ({ value, isOpen = true, ...rest }) => {
     if (this.props.value) {
       if (this.props.onChange)
-        this.props.onChange(e.target.value, this.triggerQuery, e);
+        this.props.onChange(value, this.triggerQuery, rest.event);
       return;
     }
-    this.setState({ isOpen: true, currentValue: e.target.value });
-    this.searchBase.setValue(e.target.value, {
+    this.setState({ isOpen, currentValue: value });
+    this.searchBase.setValue(value, {
       triggerSuggestionsQuery: true
     });
   };
@@ -161,6 +165,12 @@ class DataSearch extends Component {
       return highlightedIndex === index ? '#555' : '#424242';
     }
     return highlightedIndex === index ? '#eee' : '#fff';
+  };
+
+  handleSearchIconClick = () => {
+    const { currentValue } = this.state;
+    if (currentValue.trim())
+      this.setValue({ value: currentValue, isOpen: false });
   };
 
   render() {
@@ -187,7 +197,8 @@ class DataSearch extends Component {
       clearIcon,
       loader,
       renderError,
-      renderNoSuggestion
+      renderNoSuggestion,
+      icon
     } = this.props;
     const {
       isOpen,
@@ -245,6 +256,9 @@ class DataSearch extends Component {
                   clearIcon={clearIcon}
                   theme={theme}
                   currentValue={currentValue}
+                  handleSearchIconClick={this.handleSearchIconClick}
+                  icon={icon}
+                  showIcon={showIcon}
                 />
                 {this.hasCustomRenderer &&
                   this.getComponent({
@@ -421,15 +435,18 @@ DataSearch.defaultProps = {
   autoFocus: false,
   downShiftProps: {},
   theme: {
-    typography: 'Object',
+    typography: {
+      fontFamily:
+        '-apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Noto Sans", "Ubuntu", "Droid Sans", "Helvetica Neue", sans-serif',
+      fontSize: '16px'
+    },
     colors: {
       textColor: '#424242',
       primaryTextColor: '#fff',
       primaryColor: '#0B6AFF',
       titleColor: '#424242',
       alertColor: '#d9534f'
-    },
-    component: 'Object'
+    }
   }
 };
 
