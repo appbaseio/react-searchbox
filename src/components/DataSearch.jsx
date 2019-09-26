@@ -39,7 +39,27 @@ import Searchbase from '@appbaseio/searchbase';
 class DataSearch extends Component {
   constructor(props) {
     super(props);
-    const { index, url, dataField, credentials } = props;
+    const {
+      index,
+      url,
+      dataField,
+      credentials,
+      analytics,
+      headers,
+      nestedField,
+      defaultQuery,
+      beforeValueChange,
+      queryFormat,
+      defaultSuggestions,
+      fuzziness,
+      searchOperators,
+      onChange,
+      onQueryChange,
+      onValueChange,
+      onSuggestions,
+      onError,
+      onResults
+    } = props;
     const currentValue = props.value || props.defaultValue || '';
 
     this.state = {
@@ -48,22 +68,49 @@ class DataSearch extends Component {
       isOpen: false
     };
 
+    const transformQuery = query => {
+      if (defaultQuery) return defaultQuery(query, this.state.currentValue);
+      return query;
+    };
+
     this.searchBase = new Searchbase({
       index,
       url,
       dataField,
-      credentials
+      credentials,
+      analytics,
+      headers,
+      nestedField,
+      transformQuery,
+      beforeValueChange,
+      queryFormat,
+      suggestions: defaultSuggestions,
+      fuzziness,
+      searchOperators
     });
 
-    this.searchBase.subscribeToStateChanges(
-      ({ suggestions }) => {
-        this.setState({
-          suggestionsList: deepGet(suggestions, ['next', 'data']) || []
-        });
-      },
-      ['suggestions']
-    );
+    this.searchBase.subscribeToStateChanges(this.setStateValue, [
+      'suggestions'
+    ]);
+
+    this.searchBase.onQueryChange = onQueryChange;
+    this.searchBase.onValueChange = onValueChange;
+    this.searchBase.onSuggestions = onSuggestions;
+    this.searchBase.onError = onError;
+    this.searchBase.onResults = onResults;
+
+    if (onChange) onChange(currentValue, this.triggerQuery);
   }
+
+  componentWillUnmount() {
+    this.searchBase.unsubscribeToStateChanges(this.setStateValue);
+  }
+
+  setStateValue = ({ suggestions }) => {
+    this.setState({
+      suggestionsList: deepGet(suggestions, ['next', 'data']) || []
+    });
+  };
 
   getComponent = (downshiftProps = {}) => {
     const { error, isLoading } = this.props;
@@ -74,7 +121,7 @@ class DataSearch extends Component {
       downshiftProps,
       data: suggestionsList,
       value: currentValue,
-      triggerClickAnalytics: this.triggerClickAnalytics
+      triggerClickAnalytics: this.searchBase.triggerClickAnalytics
     };
     return getComponent(data, this.props);
   };
@@ -284,7 +331,14 @@ class DataSearch extends Component {
               showClear={showClear}
               themePreset={themePreset}
             />
-            {this.renderIcons()}
+            <Icons
+              clearValue={this.clearValue}
+              iconPosition={iconPosition}
+              showClear={showClear}
+              clearIcon={clearIcon}
+              theme={theme}
+              currentValue={currentValue}
+            />
           </div>
         )}
       </Container>
@@ -327,12 +381,14 @@ DataSearch.propTypes = {
   getMicInstance: func,
   renderMic: func,
   onChange: func,
+  onValueChange: func,
   onSuggestions: func,
   onError: func,
+  onResults: func,
   innerClass: object,
   style: object,
   customQuery: object,
-  defaultQuery: object,
+  defaultQuery: func,
   beforeValueChange: func,
   onQueryChange: func,
   react,
