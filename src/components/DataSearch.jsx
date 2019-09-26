@@ -173,6 +173,24 @@ class DataSearch extends Component {
       this.setValue({ value: currentValue, isOpen: false });
   };
 
+  clearValue = () => {
+    this.setValue({ value: '', isOpen: false });
+  };
+
+  onSuggestionSelected = suggestion => {
+    this.setValue({ value: suggestion.value, isOpen: false });
+    this.searchBase.triggerClickAnalytics(suggestion._click_id);
+  };
+
+  handleStateChange = changes => {
+    const { isOpen, type } = changes;
+    if (type === Downshift.stateChangeTypes.mouseUp) {
+      this.setState({
+        isOpen
+      });
+    }
+  };
+
   render() {
     const {
       style,
