@@ -1,6 +1,5 @@
 /** @jsx jsx */
 import { jsx } from '@emotion/core';
-import { css } from 'emotion/macro';
 import Highlight from 'react-highlight-words';
 import Flex from '../styles/Flex';
 
@@ -51,7 +50,7 @@ const SuggestionItem = ({ currentValue, suggestion }) => {
                 searchWords={currentValue.split(' ')}
                 textToHighlight={title}
                 highlightStyle={highlightStyle}
-                className={css({ fontSize: '1rem' })}
+                css={{ fontSize: '1rem' }}
               />
             </div>
           )}

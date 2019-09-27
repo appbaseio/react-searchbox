@@ -1,11 +1,11 @@
-import { css } from 'emotion/macro';
+import { css } from '@emotion/core';
 import styled from '@emotion/styled/macro';
 
 const alertBorder = ({ theme }) => css`
   border: 1px solid ${theme.colors.alertColor};
 `;
 
-const input = `
+const input = css`
   width: 100%;
   height: 42px;
   padding: 8px 12px;
@@ -23,7 +23,7 @@ const dark = theme => css`
   border-color: ${theme.colors.borderColor};
 `;
 
-const darkInput = ({ theme }) => `
+const darkInput = ({ theme }) => css`
   background-color: ${theme.colors.backgroundColor};
   color: ${theme.colors.textColor};
   ${dark(theme)};
@@ -40,21 +40,21 @@ const Input = styled.input`
   ${props =>
     props.showIcon &&
     props.iconPosition === 'left' &&
-    `
+    css`
       padding-left: 32px;
     `};
 
   ${props =>
     props.showIcon &&
     props.iconPosition === 'right' &&
-    `
+    css`
       padding-right: 32px;
     `};
 
   ${props =>
     // for clear icon
     props.showClear &&
-    `
+    css`
       padding-right: 32px;
     `};
 
@@ -63,7 +63,7 @@ const Input = styled.input`
     props.showClear &&
     props.showIcon &&
     props.iconPosition === 'right' &&
-    `
+    css`
       padding-right: 48px;
     `};
 

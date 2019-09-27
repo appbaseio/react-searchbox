@@ -1,4 +1,6 @@
-import React, { Component } from 'react';
+/** @jsx jsx */
+import { jsx } from '@emotion/core';
+import { Component } from 'react';
 import {
   bool,
   string,
@@ -266,9 +268,10 @@ class DataSearch extends Component {
               getItemProps,
               isOpen,
               highlightedIndex,
+              getRootProps,
               ...rest
             }) => (
-              <div className={suggestionsContainer}>
+              <div {...getRootProps({ css: suggestionsContainer })}>
                 <Input
                   id="search-box"
                   showIcon={showIcon}
@@ -329,10 +332,8 @@ class DataSearch extends Component {
                 />
                 {!this.hasCustomRenderer && isOpen && suggestionsList.length ? (
                   <ul
-                    className={`${suggestionsCss(
-                      themePreset,
-                      theme
-                    )} ${getClassName(innerClass, 'list')}`}
+                    css={suggestionsCss(themePreset, theme)}
+                    className={getClassName(innerClass, 'list')}
                   >
                     {suggestionsList.slice(0, 10).map((item, index) => (
                       <li
@@ -370,7 +371,7 @@ class DataSearch extends Component {
             )}
           </Downshift>
         ) : (
-          <div className={suggestionsContainer}>
+          <div css={suggestionsContainer}>
             <Input
               className={getClassName(innerClass, 'input') || null}
               placeholder={placeholder}
