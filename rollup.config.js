@@ -10,6 +10,14 @@ import pkg from './package.json'
 
 export default {
   input: 'src/index.js',
+  external: [
+    'downshift',
+    '@emotion/core',
+    '@emotion/styled',
+    'react-highlight-words',
+    '@appbaseio/searchbase',
+    'cross-fetch'
+  ],
   output: [
     {
       file: pkg.main,
@@ -30,8 +38,7 @@ export default {
     url(),
     svgr(),
     babel({
-      exclude: 'node_modules/**',
-      plugins: [ 'external-helpers' ]
+      exclude: 'node_modules/**'
     }),
     resolve(),
     commonjs()
