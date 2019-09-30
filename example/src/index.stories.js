@@ -40,6 +40,17 @@ export const withResponsive = () => (
   </div>
 );
 
-export const withRenderNoSuggestion = () => (
+export const withNoSuggestion = () => (
   <SearchBox {...initConfig} renderNoSuggestion={() => <p>No Suggestion</p>} />
+);
+
+export const withCustomRender = () => (
+  <SearchBox
+    {...initConfig}
+    render={data => {
+      return (data.data || []).map(dataItem => (
+        <div key={dataItem.value}>{dataItem.label}</div>
+      ));
+    }}
+  />
 );
