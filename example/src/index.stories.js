@@ -15,19 +15,19 @@ export const withAllProps = () => (
   <div>
     <SearchBox
       {...initConfig}
-      title='Search'
-      defaultValue='Songwriting'
+      title="Search"
+      defaultValue="Songwriting"
       fieldWeights={[1, 3]}
-      placeholder='Search for books'
+      placeholder="Search for books"
       autosuggest={true}
       defaultSuggestions={[
         { label: 'Songwriting', value: 'Songwriting' },
         { label: 'Musicians', value: 'Musicians' }
       ]}
       highlight={true}
-      highlightField='group_city'
-      queryFormat='or'
-      fuzziness='AUTO'
+      highlightField="group_city"
+      queryFormat="or"
+      fuzziness="AUTO"
       showClear
       showVoiceSearch
     />
@@ -72,6 +72,6 @@ export const withControlledComponent = () => {
   );
 };
 
-export const withNoSuggestions = () => (
+export const withNoAutoSuggest = () => (
   <SearchBox {...initConfig} autoSuggest={false} />
 );
