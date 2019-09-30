@@ -5,6 +5,11 @@ const alertBorder = ({ theme }) => css`
   border: 1px solid ${theme.colors.alertColor};
 `;
 
+const webkitLineClamp = css`
+  line-height: 1.4em;
+  max-height: 5.6em;
+`;
+
 const input = css`
   width: 100%;
   height: 42px;
@@ -100,10 +105,10 @@ const noSuggestions = (themePreset, theme) => css`
       width: 100%;
       max-height: 2.3rem;
       line-height: 1.2rem;
-      -webkit-line-clamp: 2;
       -webkit-box-orient: vertical;
       overflow: hidden;
       text-overflow: ellipsis;
+      ${webkitLineClamp}
     }
   }
 
