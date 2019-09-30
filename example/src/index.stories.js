@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import SearchBox from 'react-searchbox-zzzzz';
 
 export default { title: 'SearchBox' };
@@ -54,3 +54,20 @@ export const withCustomRender = () => (
     }}
   />
 );
+
+export const withControlledComponent = () => {
+  const [value, setValue] = useState('');
+  const handleKeyDown = (e, triggerQuery) => {
+    if (e.key === 'Enter') {
+      triggerQuery();
+    }
+  };
+  return (
+    <SearchBox
+      {...initConfig}
+      value={value}
+      onChange={setValue}
+      onKeyDown={handleKeyDown}
+    />
+  );
+};
