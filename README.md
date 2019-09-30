@@ -1,31 +1,36 @@
-# react-searchbox-zzzzz
+# @appbaseio/react-searchbox
 
 > 
 
-[![NPM](https://img.shields.io/npm/v/react-searchbox-zzzzz.svg)](https://www.npmjs.com/package/react-searchbox-zzzzz) [![JavaScript Style Guide](https://img.shields.io/badge/code_style-standard-brightgreen.svg)](https://standardjs.com)
+[![NPM](https://img.shields.io/npm/v/@appbaseio/react-searchbox.svg)](https://www.npmjs.com/package/@appbaseio/react-searchbox) [![JavaScript Style Guide](https://img.shields.io/badge/code_style-standard-brightgreen.svg)](https://standardjs.com)
 
 ## Install
 
 ```bash
-npm install --save react-searchbox-zzzzz
+npm install @appbaseio/react-searchbox
+# or
+yarn add @appbaseio/react-searchbox
 ```
 
 ## Usage
 
 ```jsx
-import React, { Component } from 'react'
+import React, { Component } from 'react';
 
-import MyComponent from 'react-searchbox-zzzzz'
+import SearchBox from '@appbaseio/react-searchbox';
 
-class Example extends Component {
-  render () {
+export default class App extends Component {
+  render() {
     return (
-      <MyComponent />
-    )
+      <div>
+        <SearchBox
+          app="good-books-ds"
+          credentials="nY6NNTZZ6:27b76b9f-18ea-456c-bc5e-3a5263ebc63d"
+          dataField={['original_title', 'original_title.search']}
+          enableVoiceSearch
+        />
+      </div>
+    );
   }
 }
 ```
-
-## License
-
-MIT © [ShahAnuj2610](https://github.com/ShahAnuj2610)
