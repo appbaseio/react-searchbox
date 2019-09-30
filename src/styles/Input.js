@@ -12,7 +12,7 @@ const webkitLineClamp = css`
 
 const input = css`
   width: 100%;
-  height: 40px;
+  height: 42px;
   padding: 8px 12px;
   border: 1px solid #ccc;
   background-color: #fafafa;

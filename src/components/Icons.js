@@ -43,7 +43,7 @@ const Icons = props => {
       {currentValue && showClear && (
         <InputIcon
           onClick={clearValue}
-          iconPosition="right"
+          iconPosition='right'
           clearIcon={iconPosition === 'right'}
           theme={theme}
         >

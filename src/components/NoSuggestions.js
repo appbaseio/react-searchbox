@@ -28,7 +28,7 @@ const NoSuggestions = props => {
         innerClass={innerClass}
         themePreset={themePreset}
         theme={theme}
-        innerClassName="noSuggestion"
+        innerClassName='noSuggestion'
       >
         {typeof renderNoSuggestion === 'function'
           ? renderNoSuggestion(currentValue)

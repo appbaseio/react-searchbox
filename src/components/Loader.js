@@ -14,7 +14,7 @@ const Loader = props => {
     return (
       <SuggestionWrapper
         innerClass={innerClass}
-        innerClassName="loader"
+        innerClassName='loader'
         theme={theme}
         themePreset={themePreset}
       >

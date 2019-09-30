@@ -16,7 +16,7 @@ const Error = props => {
     return (
       <SuggestionWrapper
         innerClass={innerClass}
-        innerClassName="error"
+        innerClassName='error'
         theme={theme}
         themePreset={themePreset}
       >

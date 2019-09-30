@@ -137,8 +137,9 @@ class SearchBox extends Component {
   };
 
   getComponent = (downshiftProps = {}) => {
-    const { error, isLoading } = this.props;
-    const { currentValue, suggestionsList } = this.state;
+    const { currentValue, suggestionsList, error } = this.state;
+    const isLoading =
+      this.searchBase && this.searchBase.suggestionsRequestPending;
     const data = {
       error,
       loading: isLoading,
@@ -175,8 +176,9 @@ class SearchBox extends Component {
 
   setValue = ({ value, isOpen = true, ...rest }) => {
     if (this.props.value) {
-      if (this.props.onChange)
+      if (this.props.onChange) {
         this.props.onChange(value, this.triggerQuery, rest.event);
+      }
       return;
     }
     this.setState({ isOpen, currentValue: value });
@@ -196,8 +198,9 @@ class SearchBox extends Component {
 
   handleSearchIconClick = () => {
     const { currentValue } = this.state;
-    if (currentValue.trim())
+    if (currentValue.trim()) {
       this.setValue({ value: currentValue, isOpen: false });
+    }
   };
 
   clearValue = () => {
@@ -254,7 +257,10 @@ class SearchBox extends Component {
       renderError,
       renderNoSuggestion,
       icon,
-      value
+      value,
+      getMicInstance,
+      renderMic,
+      showVoiceSearch
     } = this.props;
     const isLoading =
       this.searchBase && this.searchBase.suggestionsRequestPending;
@@ -271,7 +277,7 @@ class SearchBox extends Component {
         )}
         {defaultSuggestions || autoSuggest ? (
           <Downshift
-            id="search-box-downshift"
+            id='search-box-downshift'
             onChange={this.onSuggestionSelected}
             onStateChange={this.handleStateChange}
             isOpen={isOpen}
@@ -288,18 +294,14 @@ class SearchBox extends Component {
             }) => (
               <div {...getRootProps({ css: suggestionsContainer })}>
                 <Input
-                  id="search-box"
+                  id='search-box'
                   showIcon={showIcon}
                   showClear={showClear}
                   iconPosition={iconPosition}
                   {...getInputProps({
                     className: getClassName(innerClass, 'input'),
                     placeholder: placeholder,
-                    value: value
-                      ? value
-                      : currentValue === null
-                      ? ''
-                      : currentValue,
+                    value: value || (currentValue === null ? '' : currentValue),
                     onChange: this.onInputChange,
                     onBlur: this.withTriggerQuery(onBlur),
                     onFocus: this.handleFocus,
@@ -319,6 +321,12 @@ class SearchBox extends Component {
                   handleSearchIconClick={this.handleSearchIconClick}
                   icon={icon}
                   showIcon={showIcon}
+                  getMicInstance={getMicInstance}
+                  renderMic={renderMic}
+                  innerClass={innerClass}
+                  enableVoiceSearch={showVoiceSearch}
+                  onMicClick={this.searchBase && this.searchBase.onMicClick}
+                  micStatus={this.searchBase && this.searchBase.micStatus}
                 />
                 {this.hasCustomRenderer &&
                   this.getComponent({
@@ -390,7 +398,7 @@ class SearchBox extends Component {
             <Input
               className={getClassName(innerClass, 'input') || null}
               placeholder={placeholder}
-              value={currentValue ? currentValue : ''}
+              value={currentValue || ''}
               onChange={this.onInputChange}
               onBlur={this.withTriggerQuery(onBlur)}
               onFocus={this.withTriggerQuery(onFocus)}
@@ -410,6 +418,12 @@ class SearchBox extends Component {
               clearIcon={clearIcon}
               theme={theme}
               currentValue={currentValue}
+              getMicInstance={getMicInstance}
+              renderMic={renderMic}
+              innerClass={innerClass}
+              enableVoiceSearch={showVoiceSearch}
+              onMicClick={this.searchBase && this.searchBase.onMicClick}
+              micStatus={this.searchBase && this.searchBase.micStatus}
             />
           </div>
         )}
