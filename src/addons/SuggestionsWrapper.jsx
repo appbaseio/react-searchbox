@@ -1,6 +1,6 @@
 import React from 'react';
 import { getClassName } from '../utils/helper';
-import { noSuggestions } from '../components/Input';
+import { noSuggestions } from '../styles/Input';
 
 const SuggestionWrapper = ({
   theme,
@@ -15,7 +15,7 @@ const SuggestionWrapper = ({
       innerClassName || ''
     )}`}
   >
-    <li>{children}</li>
+    <div>{children}</div>
   </div>
 );
 

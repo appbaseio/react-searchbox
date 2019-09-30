@@ -20,7 +20,7 @@ import {
 import Input, {
   suggestionsContainer,
   suggestions as suggestionsCss
-} from './Input';
+} from '../styles/Input';
 import Container from '../styles/Container';
 import Title from '../styles/Title';
 import {
