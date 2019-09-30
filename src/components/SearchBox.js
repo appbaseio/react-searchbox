@@ -40,12 +40,12 @@ import Searchbase from '@appbaseio/searchbase';
 class SearchBox extends Component {
   constructor(props) {
     super(props);
-    const { onChange, value, defaultValue } = props;
+    const { onChange, value, defaultValue, defaultSuggestions } = props;
     const currentValue = value || defaultValue || '';
 
     this.state = {
       currentValue,
-      suggestionsList: [],
+      suggestionsList: defaultSuggestions || [],
       isOpen: false,
       error: null
     };
@@ -262,7 +262,10 @@ class SearchBox extends Component {
     return (
       <Container style={style} className={className}>
         {title && (
-          <Title className={getClassName(innerClass, 'title') || null}>
+          <Title
+            theme={theme}
+            className={getClassName(innerClass, 'title') || null}
+          >
             {title}
           </Title>
         )}

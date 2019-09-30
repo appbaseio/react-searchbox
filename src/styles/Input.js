@@ -12,12 +12,13 @@ const webkitLineClamp = css`
 
 const input = css`
   width: 100%;
-  height: 30px;
+  height: 40px;
   padding: 8px 12px;
   border: 1px solid #ccc;
   background-color: #fafafa;
   font-size: 0.9rem;
   outline: none;
+  box-sizing: border-box;
 
   &:focus {
     background-color: #fff;
@@ -82,7 +83,7 @@ const noSuggestions = (themePreset, theme) => css`
   font-size: 0.9rem;
   z-index: 3;
   position: absolute;
-  top: 47px;
+  top: 39px;
   margin: 0;
   padding: 0;
   list-style: none;
@@ -123,7 +124,7 @@ const suggestions = (themePreset, theme) => css`
   font-size: 0.9rem;
   z-index: 3;
   position: absolute;
-  top: 47px;
+  top: 39px;
   margin: 0;
   padding: 0;
   list-style: none;
