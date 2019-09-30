@@ -36,6 +36,7 @@ import Error from './Error';
 import SuggestionItem from '../addons/SuggestionItem';
 import NoSuggestions from './NoSuggestions';
 import Searchbase from '@appbaseio/searchbase';
+import getTheme, { composeThemeObject } from '../utils/theme';
 
 class SearchBox extends Component {
   constructor(props) {
@@ -247,7 +248,6 @@ class SearchBox extends Component {
       onKeyPress,
       onKeyUp,
       themePreset,
-      theme,
       downShiftProps,
       onFocus,
       onKeyDown,
@@ -262,6 +262,7 @@ class SearchBox extends Component {
       renderMic,
       showVoiceSearch
     } = this.props;
+    const theme = composeThemeObject(getTheme(themePreset), this.props.theme);
     const isLoading =
       this.searchBase && this.searchBase.suggestionsRequestPending;
     const { isOpen, error, currentValue, suggestionsList } = this.state;
@@ -310,6 +311,7 @@ class SearchBox extends Component {
                     onKeyDown: this.withTriggerQuery(onKeyDown)
                   })}
                   themePreset={themePreset}
+                  theme={theme}
                 />
                 <Icons
                   clearValue={this.clearValue}
@@ -506,20 +508,7 @@ SearchBox.defaultProps = {
   themePreset: 'light',
   autoFocus: false,
   downShiftProps: {},
-  theme: {
-    typography: {
-      fontFamily:
-        '-apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Noto Sans", "Ubuntu", "Droid Sans", "Helvetica Neue", sans-serif',
-      fontSize: '16px'
-    },
-    colors: {
-      textColor: '#424242',
-      primaryTextColor: '#fff',
-      primaryColor: '#0B6AFF',
-      titleColor: '#424242',
-      alertColor: '#d9534f'
-    }
-  }
+  theme: {}
 };
 
 export default SearchBox;
