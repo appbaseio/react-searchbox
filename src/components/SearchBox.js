@@ -330,22 +330,25 @@ class SearchBox extends Component {
                   onMicClick={this.searchBase && this.searchBase.onMicClick}
                   micStatus={this.searchBase && this.searchBase.micStatus}
                 />
-                {this.hasCustomRenderer &&
-                  this.getComponent({
-                    getInputProps,
-                    getItemProps,
-                    isOpen,
-                    highlightedIndex,
-                    ...rest
-                  })}
-                <Loader
-                  loader={loader}
-                  isLoading={isLoading}
-                  themePreset={themePreset}
-                  theme={theme}
-                  innerClass={innerClass}
-                  currentValue={currentValue}
-                />
+                {this.hasCustomRenderer && (
+                  <div>
+                    {this.getComponent({
+                      getInputProps,
+                      getItemProps,
+                      isOpen,
+                      highlightedIndex,
+                      ...rest
+                    })}
+                    <Loader
+                      loader={loader}
+                      isLoading={isLoading}
+                      themePreset={themePreset}
+                      theme={theme}
+                      innerClass={innerClass}
+                      currentValue={currentValue}
+                    />
+                  </div>
+                )}
                 <Error
                   error={error}
                   renderError={renderError}
