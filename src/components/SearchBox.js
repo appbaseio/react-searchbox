@@ -20,7 +20,7 @@ import {
 import Input, {
   suggestionsContainer,
   suggestions as suggestionsCss
-} from './Input';
+} from '../styles/Input';
 import Container from '../styles/Container';
 import Title from '../styles/Title';
 import {
@@ -37,31 +37,11 @@ import SuggestionItem from '../addons/SuggestionItem';
 import NoSuggestions from './NoSuggestions';
 import Searchbase from '@appbaseio/searchbase';
 
-class DataSearch extends Component {
+class SearchBox extends Component {
   constructor(props) {
     super(props);
-    const {
-      index,
-      url,
-      dataField,
-      credentials,
-      analytics,
-      headers,
-      nestedField,
-      defaultQuery,
-      beforeValueChange,
-      queryFormat,
-      defaultSuggestions,
-      fuzziness,
-      searchOperators,
-      onChange,
-      onQueryChange,
-      onValueChange,
-      onSuggestions,
-      onError,
-      onResults
-    } = props;
-    const currentValue = props.value || props.defaultValue || '';
+    const { onChange, value, defaultValue } = props;
+    const currentValue = value || defaultValue || '';
 
     this.state = {
       currentValue,
@@ -69,41 +49,7 @@ class DataSearch extends Component {
       isOpen: false,
       error: null
     };
-
-    const transformQuery = query => {
-      if (defaultQuery) return defaultQuery(query, this.state.currentValue);
-      return query;
-    };
-
-    this.searchBase = new Searchbase({
-      index,
-      url,
-      dataField,
-      credentials,
-      analytics,
-      headers,
-      nestedField,
-      transformQuery,
-      beforeValueChange,
-      queryFormat,
-      suggestions: defaultSuggestions,
-      fuzziness,
-      searchOperators
-    });
-
-    this.searchBase.subscribeToStateChanges(this.setStateValue, [
-      'suggestions'
-    ]);
-
-    this.searchBase.onQueryChange = onQueryChange;
-    this.searchBase.onValueChange = onValueChange;
-    this.searchBase.onSuggestions = onSuggestions;
-    this.searchBase.onError = error => {
-      this.setState({ error });
-      if (onError) onError(error);
-    };
-    this.searchBase.onResults = onResults;
-
+    this._initSearchBase();
     if (onChange) onChange(currentValue, this.triggerQuery);
   }
 
@@ -119,8 +65,69 @@ class DataSearch extends Component {
     this.searchBase.unsubscribeToStateChanges(this.setStateValue);
   }
 
+  _initSearchBase = () => {
+    const {
+      app,
+      url,
+      dataField,
+      credentials,
+      analytics,
+      headers,
+      nestedField,
+      defaultQuery,
+      beforeValueChange,
+      queryFormat,
+      defaultSuggestions,
+      fuzziness,
+      searchOperators,
+      onQueryChange,
+      onValueChange,
+      onSuggestions,
+      onError,
+      onResults
+    } = this.props;
+
+    try {
+      const transformQuery = query => {
+        if (defaultQuery) return defaultQuery(query, this.state.currentValue);
+        return query;
+      };
+
+      this.searchBase = new Searchbase({
+        index: app,
+        url,
+        dataField,
+        credentials,
+        analytics,
+        headers,
+        nestedField,
+        transformQuery,
+        beforeValueChange,
+        queryFormat,
+        suggestions: defaultSuggestions,
+        fuzziness,
+        searchOperators
+      });
+
+      this.searchBase.subscribeToStateChanges(this.setStateValue, [
+        'suggestions'
+      ]);
+
+      this.searchBase.onQueryChange = onQueryChange;
+      this.searchBase.onValueChange = onValueChange;
+      this.searchBase.onSuggestions = onSuggestions;
+      this.searchBase.onError = error => {
+        this.setState({ error });
+        if (onError) onError(error);
+      };
+      this.searchBase.onResults = onResults;
+    } catch (e) {
+      console.error(e);
+    }
+  };
+
   _applySetter = (prev, next, setterFunc) => {
-    if (prev !== next) this.searchBase[setterFunc](next);
+    if (prev !== next) this.searchBase && this.searchBase[setterFunc](next);
   };
 
   setStateValue = ({ suggestions }) => {
@@ -138,7 +145,8 @@ class DataSearch extends Component {
       downshiftProps,
       data: suggestionsList,
       value: currentValue,
-      triggerClickAnalytics: this.searchBase.triggerClickAnalytics
+      triggerClickAnalytics:
+        this.searchBase && this.searchBase.triggerClickAnalytics
     };
     return getComponent(data, this.props);
   };
@@ -155,9 +163,10 @@ class DataSearch extends Component {
   };
 
   triggerQuery = () => {
-    this.searchBase.setValue(this.props.value, {
-      triggerQuery: true
-    });
+    this.searchBase &&
+      this.searchBase.setValue(this.props.value, {
+        triggerQuery: true
+      });
   };
 
   onInputChange = event => {
@@ -171,9 +180,10 @@ class DataSearch extends Component {
       return;
     }
     this.setState({ isOpen, currentValue: value });
-    this.searchBase.setValue(value, {
-      triggerSuggestionsQuery: true
-    });
+    this.searchBase &&
+      this.searchBase.setValue(value, {
+        triggerSuggestionsQuery: true
+      });
   };
 
   getBackgroundColor = (highlightedIndex, index) => {
@@ -196,7 +206,8 @@ class DataSearch extends Component {
 
   onSuggestionSelected = suggestion => {
     this.setValue({ value: suggestion.value, isOpen: false });
-    this.searchBase.triggerClickAnalytics(suggestion._click_id);
+    this.searchBase &&
+      this.searchBase.triggerClickAnalytics(suggestion._click_id);
   };
 
   handleStateChange = changes => {
@@ -243,12 +254,10 @@ class DataSearch extends Component {
       renderError,
       renderNoSuggestion,
       icon,
-      value,
-      getMicInstance,
-      renderMic,
-      enableVoiceSearch
+      value
     } = this.props;
-    const isLoading = this.searchBase.suggestionsRequestPending;
+    const isLoading =
+      this.searchBase && this.searchBase.suggestionsRequestPending;
     const { isOpen, error, currentValue, suggestionsList } = this.state;
     return (
       <Container style={style} className={className}>
@@ -307,12 +316,6 @@ class DataSearch extends Component {
                   handleSearchIconClick={this.handleSearchIconClick}
                   icon={icon}
                   showIcon={showIcon}
-                  getMicInstance={getMicInstance}
-                  renderMic={renderMic}
-                  innerClass={innerClass}
-                  enableVoiceSearch={enableVoiceSearch}
-                  onMicClick={this.searchBase.onMicClick}
-                  micStatus={this.searchBase.micStatus}
                 />
                 {this.hasCustomRenderer &&
                   this.getComponent({
@@ -412,9 +415,9 @@ class DataSearch extends Component {
   }
 }
 
-DataSearch.propTypes = {
-  index: string.isRequired,
-  url: string.isRequired,
+SearchBox.propTypes = {
+  app: string.isRequired,
+  url: string,
   credentials: string.isRequired,
   analytics: bool.isRequired,
   headers: object,
@@ -439,11 +442,13 @@ DataSearch.propTypes = {
   customHighlight: func,
   queryFormat,
   fuzziness,
-  enableVoiceSearch: bool,
+  showVoiceSearch: bool,
   searchOperators: bool,
   render: func,
   renderError: func,
   renderNoSuggestion: title,
+  getMicInstance: func,
+  renderMic: func,
   onChange: func,
   onValueChange: func,
   onSuggestions: func,
@@ -463,13 +468,11 @@ DataSearch.propTypes = {
   themePreset,
   onFocus: func,
   onKeyDown: func,
-  autoFocus: bool,
-  // Mic props
-  getMicInstance: func,
-  renderMic: func
+  autoFocus: bool
 };
 
-DataSearch.defaultProps = {
+SearchBox.defaultProps = {
+  url: 'https://scalr.api.appbase.io',
   placeholder: 'Search',
   analytics: false,
   showIcon: true,
@@ -480,7 +483,7 @@ DataSearch.defaultProps = {
   debounce: 0,
   highlight: false,
   queryFormat: 'or',
-  enableVoiceSearch: false,
+  showVoiceSearch: false,
   searchOperators: false,
   className: '',
   themePreset: 'light',
@@ -502,4 +505,4 @@ DataSearch.defaultProps = {
   }
 };
 
-export default DataSearch;
+export default SearchBox;

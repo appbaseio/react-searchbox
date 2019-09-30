@@ -9,7 +9,7 @@
     "react": "^16.4.1",
     "react-dom": "^16.4.1",
     "react-scripts": "^1.1.4",
-    "react-searchbox-zzzzz": "^2.0.1"
+    "react-searchbox-zzzzz": "link:.."
   },
   "scripts": {
     "start": "react-scripts start",

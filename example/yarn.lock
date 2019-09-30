@@ -6757,16 +6757,9 @@ react-scripts@^1.1.4:
   optionalDependencies:
     fsevents "^1.1.3"
 
-react-searchbox-zzzzz@^2.0.1:
-  version "2.0.1"
-  resolved "https://registry.yarnpkg.com/react-searchbox-zzzzz/-/react-searchbox-zzzzz-2.0.1.tgz#73f9528878b367afc070e9c8816ab10b95f6aa97"
-  integrity sha512-4fYUqkVXdmWsrSZWrM08JZt2Eh3QxpYBVEDpv3GoFns3zlYKBqbt9Q9FfFoV3t5Lt6JQOZSIV03CH1tsh73Lbw==
-  dependencies:
-    "@appbaseio/searchbase" "^1.0.0-alpha"
-    "@emotion/core" "^10.0.17"
-    "@emotion/styled" "^10.0.17"
-    downshift "^3.3.1"
-    react-highlight-words "^0.16.0"
+"react-searchbox-zzzzz@link:..":
+  version "0.0.0"
+  uid ""
 
 react@^16.4.1:
   version "16.10.0"

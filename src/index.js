@@ -1,3 +1,4 @@
-import DataSearch from "./components/DataSearch";
+import SearchBox from './components/SearchBox';
+import './index.css';
 
-export default DataSearch;
+export default SearchBox;

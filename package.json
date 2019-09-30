@@ -1,10 +1,17 @@
 {
   "name": "react-searchbox-zzzzz",
   "version": "2.0.2",
-  "description": "",
-  "author": "ShahAnuj2610",
+  "description": "React library kit based on ReactiveSearch's DataSearch",
   "license": "MIT",
-  "repository": "ShahAnuj2610/react-searchbox-zzzzz",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/appbaseio/react-searchbox.git"
+  },
+  "author": "Anuj Shah <anujshah584@gmail.com>",
+  "bugs": {
+    "url": "https://github.com/appbaseio/react-searchbox/issues"
+  },
+  "homepage": "https://github.com/appbaseio/react-searchbox#readme",
   "main": "dist/index.js",
   "module": "dist/index.es.js",
   "jsnext:main": "dist/index.es.js",
@@ -62,7 +69,8 @@
     "rollup-plugin-node-resolve": "^3.3.0",
     "rollup-plugin-peer-deps-external": "^2.2.0",
     "rollup-plugin-postcss": "^1.6.2",
-    "rollup-plugin-url": "^1.4.0"
+    "rollup-plugin-url": "^1.4.0",
+    "prettier": "^1.18.2"
   },
   "files": [
     "dist"
