@@ -1,7 +1,7 @@
 /** @jsx jsx */
 import { jsx } from '@emotion/core';
 import { getClassName } from '../utils/helper';
-import { noSuggestions } from '../styles/Input';
+import { noSuggestions } from '../styles/Suggestions';
 
 const SuggestionWrapper = ({
   theme,

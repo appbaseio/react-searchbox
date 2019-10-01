@@ -11,23 +11,24 @@ const initConfig = {
 
 export const gettingStarted = () => <SearchBox {...initConfig} />;
 
+// TODO: handle highlight and highlightField prop
 export const withAllProps = () => (
   <div>
     <SearchBox
       {...initConfig}
-      title="Search"
-      defaultValue="Songwriting"
+      title='Search'
+      defaultValue='Songwriting'
       fieldWeights={[1, 3]}
-      placeholder="Search for books"
+      placeholder='Search for books'
       autosuggest={true}
       defaultSuggestions={[
         { label: 'Songwriting', value: 'Songwriting' },
         { label: 'Musicians', value: 'Musicians' }
       ]}
       highlight={true}
-      highlightField="group_city"
-      queryFormat="or"
-      fuzziness="AUTO"
+      highlightField='group_city'
+      queryFormat='or'
+      fuzziness='AUTO'
       showClear
       showVoiceSearch
     />
@@ -41,7 +42,10 @@ export const withResponsive = () => (
 );
 
 export const withNoSuggestion = () => (
-  <SearchBox {...initConfig} renderNoSuggestion={() => <p>No Suggestion</p>} />
+  <SearchBox
+    {...initConfig}
+    renderNoSuggestion={() => <p>No Suggestion</p>}
+  />
 );
 
 export const withCustomRender = () => (

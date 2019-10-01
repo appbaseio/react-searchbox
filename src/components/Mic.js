@@ -46,11 +46,9 @@ const Mic = props => {
   if (hasCustomRenderer) return getComponent();
 
   return (
-    <div>
-      <MicIcon iconPosition={iconPosition}>
-        <Icon className={className} onClick={onClick} status={status} />
-      </MicIcon>
-    </div>
+    <MicIcon iconPosition={iconPosition}>
+      <Icon className={className} onClick={onClick} status={status} />
+    </MicIcon>
   );
 };
 

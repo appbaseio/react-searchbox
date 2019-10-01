@@ -17,10 +17,7 @@ import {
   any,
   themePreset
 } from '../utils/types';
-import Input, {
-  suggestionsContainer,
-  suggestions as suggestionsCss
-} from '../styles/Input';
+import Input from '../styles/Input';
 import Container from '../styles/Container';
 import Title from '../styles/Title';
 import {
@@ -37,6 +34,7 @@ import SuggestionItem from '../addons/SuggestionItem';
 import NoSuggestions from './NoSuggestions';
 import Searchbase from '@appbaseio/searchbase';
 import getTheme, { composeThemeObject } from '../utils/theme';
+import { suggestions as suggestionsCss, suggestionsContainer } from '../styles/Suggestions';
 
 class SearchBox extends Component {
   constructor(props) {

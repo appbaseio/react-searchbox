@@ -20,8 +20,6 @@
     "npm": ">=5"
   },
   "scripts": {
-    "test": "cross-env CI=1 react-scripts test --env=jsdom",
-    "test:watch": "react-scripts test --env=jsdom",
     "build": "rollup -c",
     "start": "rollup -c -w",
     "prepare": "yarn run build",
@@ -38,8 +36,7 @@
     "@emotion/core": "^10.0.17",
     "@emotion/styled": "^10.0.17",
     "react-highlight-words": "^0.16.0",
-    "@appbaseio/searchbase": "^1.0.0-alpha",
-    "cross-fetch": "^3.0.4"
+    "@appbaseio/searchbase": "^1.0.0-alpha"
   },
   "devDependencies": {
     "babel-plugin-emotion": "^10.0.19",
@@ -62,7 +59,6 @@
     "gh-pages": "^1.2.0",
     "react": "^16.4.1",
     "react-dom": "^16.4.1",
-    "react-scripts": "^1.1.4",
     "rollup": "^0.64.1",
     "rollup-plugin-babel": "^3.0.7",
     "rollup-plugin-commonjs": "^9.1.3",

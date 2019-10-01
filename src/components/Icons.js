@@ -5,13 +5,6 @@ import SearchSvg from '../styles/SearchSvg';
 import { getClassName } from '../utils/helper';
 import Mic from './Mic';
 
-const CancelIcon = props => {
-  if (props.showClear) {
-    return props.clearIcon || <CancelSvg />;
-  }
-  return null;
-};
-
 const SearchIcon = props => {
   if (props.showIcon) {
     return props.icon || <SearchSvg />;
@@ -39,7 +32,7 @@ const Icons = props => {
   } = props;
 
   return (
-    <React.Fragment>
+    <div>
       {currentValue && showClear && (
         <InputIcon
           onClick={clearValue}
@@ -47,7 +40,7 @@ const Icons = props => {
           clearIcon={iconPosition === 'right'}
           theme={theme}
         >
-          <CancelIcon showClear={showClear} clearIcon={clearIcon} />
+          {clearIcon || <CancelSvg />}
         </InputIcon>
       )}
       {enableVoiceSearch && (
@@ -67,7 +60,7 @@ const Icons = props => {
       >
         <SearchIcon showIcon={showIcon} icon={icon} />
       </InputIcon>
-    </React.Fragment>
+    </div>
   );
 };
 
