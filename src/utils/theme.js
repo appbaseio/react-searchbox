@@ -45,9 +45,5 @@ export const composeThemeObject = (ownTheme = {}, userTheme = {}) => ({
   colors: {
     ...ownTheme.colors,
     ...userTheme.colors
-  },
-  component: {
-    ...ownTheme.component,
-    ...userTheme.component
   }
 });
