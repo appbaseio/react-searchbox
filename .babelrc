@@ -6,5 +6,5 @@
     "stage-0",
     "react"
   ],
-  "plugins": ["emotion"]
+  "plugins": ["emotion", "external-helpers"]
 }

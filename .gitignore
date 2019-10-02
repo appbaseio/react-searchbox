@@ -23,3 +23,5 @@ yarn-error.log*
 
 # webstorm
 .idea
+
+stats.html

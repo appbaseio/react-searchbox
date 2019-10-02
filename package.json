@@ -67,7 +67,8 @@
 		"rollup-plugin-postcss": "^1.6.2",
 		"rollup-plugin-url": "^1.4.0",
 		"prettier": "^1.18.2",
-		"rollup-plugin-terser": "^5.1.2"
+		"rollup-plugin-terser": "^5.1.2",
+		"rollup-plugin-visualizer": "^2.6.0"
 	},
 	"files": [
 		"dist"

@@ -6,6 +6,7 @@ import resolve from 'rollup-plugin-node-resolve';
 import url from 'rollup-plugin-url';
 import svgr from '@svgr/rollup';
 import { terser } from 'rollup-plugin-terser';
+import visualizer from 'rollup-plugin-visualizer';
 
 import pkg from './package.json';
 
@@ -42,6 +43,7 @@ export default {
     }),
     resolve(),
     commonjs(),
-    terser()
+    terser(),
+    visualizer()
   ]
 };
