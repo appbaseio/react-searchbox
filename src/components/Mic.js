@@ -1,8 +1,5 @@
 import React from 'react';
 import MicIcon from '../styles/MicIcon';
-import MuteSvg from '../styles/MuteSvg';
-import ListenSvg from '../styles/ListenSvg';
-import MicSvg from '../styles/MicSvg';
 import { hasCustomRenderer as hcr, getComponent as gc } from '../utils/helper';
 
 const STATUS = {
@@ -13,20 +10,32 @@ const STATUS = {
 };
 
 const Icon = props => {
-  const { className, status, onClick } = props;
+  const { status, ...rest } = props;
+
+  const imgRender = url => (
+    <img {...rest} src={url} style={{ width: '24px', marginTop: '7px' }} />
+  );
 
   if (!window.SpeechRecognition) {
-    return <MuteSvg className={className} onClick={onClick} />;
+    return imgRender(
+      'https://cdn3.iconfinder.com/data/icons/glypho-music-and-sound/64/microphone-off-512.png'
+    );
   }
 
   switch (status) {
     case STATUS.active:
-      return <ListenSvg className={className} onClick={onClick} />;
+      return imgRender(
+        'https://media.giphy.com/media/ZZr4lCvpuMP58PXzY1/giphy.gif'
+      );
     case STATUS.stopped:
     case STATUS.denied:
-      return <MuteSvg className={className} onClick={onClick} />;
+      return imgRender(
+        'https://cdn3.iconfinder.com/data/icons/glypho-music-and-sound/64/microphone-off-512.png'
+      );
     default:
-      return <MicSvg className={className} onClick={onClick} />;
+      return imgRender(
+        'https://cdn3.iconfinder.com/data/icons/glypho-music-and-sound/64/microphone-512.png'
+      );
   }
 };
 
