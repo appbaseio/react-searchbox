@@ -401,7 +401,7 @@ class SearchBox extends Component {
             <Input
               className={getClassName(innerClass, 'input') || null}
               placeholder={placeholder}
-              value={currentValue || ''}
+              value={value || (currentValue === null ? '' : currentValue)}
               onChange={this.onInputChange}
               onBlur={this.withTriggerQuery(onBlur)}
               onFocus={this.withTriggerQuery(onFocus)}

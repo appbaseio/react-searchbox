@@ -16,9 +16,12 @@ export const withAllProps = () => (
   <div>
     <SearchBox
       {...initConfig}
+      dataField={[
+        { field: 'original_title', weight: 1 },
+        { field: 'original_title.search', weight: 3 }
+      ]}
       title='Search'
       defaultValue='Songwriting'
-      fieldWeights={[1, 3]}
       placeholder='Search for books'
       autosuggest={true}
       defaultSuggestions={[
