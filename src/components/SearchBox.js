@@ -24,6 +24,7 @@ import {
   deepGet,
   getClassName,
   getComponent,
+  getURLParameters,
   hasCustomRenderer
 } from '../utils/helper';
 import Downshift from 'downshift';
@@ -34,7 +35,10 @@ import SuggestionItem from '../addons/SuggestionItem';
 import NoSuggestions from './NoSuggestions';
 import Searchbase from '@appbaseio/searchbase';
 import getTheme, { composeThemeObject } from '../utils/theme';
-import { suggestions as suggestionsCss, suggestionsContainer } from '../styles/Suggestions';
+import {
+  suggestions as suggestionsCss,
+  suggestionsContainer
+} from '../styles/Suggestions';
 
 class SearchBox extends Component {
   constructor(props) {
@@ -52,17 +56,45 @@ class SearchBox extends Component {
     if (onChange) onChange(currentValue, this.triggerQuery);
   }
 
+  componentDidMount() {
+    if (this.props.URLParams) {
+      this.setValue({
+        value: this.getSearchTerm(this.props.currUrl),
+        isOpen: false
+      });
+    }
+  }
+
   componentDidUpdate(prevProps, prevState, snapshot) {
-    const { dataField, headers, fuzziness, nestedField } = this.props;
+    const {
+      dataField,
+      headers,
+      fuzziness,
+      nestedField,
+      currUrl,
+      URLParams
+    } = this.props;
     this._applySetter(prevProps.dataField, dataField, 'setDataField');
     this._applySetter(prevProps.headers, headers, 'setHeaders');
     this._applySetter(prevProps.fuzziness, fuzziness, 'setFuzziness');
     this._applySetter(prevProps.nestedField, nestedField, 'setNestedField');
+    // eslint-disable-next-line react/prop-types
+    if (URLParams && prevProps.currUrl !== currUrl) {
+      this.setValue({
+        value: this.getSearchTerm(currUrl),
+        isOpen: false
+      });
+    }
   }
 
   componentWillUnmount() {
     this.searchBase.unsubscribeToStateChanges(this.setStateValue);
   }
+
+  getSearchTerm = (url = '') => {
+    const searchParams = getURLParameters(url);
+    return searchParams && searchParams[this.props.searchTerm];
+  };
 
   _initSearchBase = () => {
     const {
@@ -88,7 +120,9 @@ class SearchBox extends Component {
 
     try {
       const transformQuery = query => {
-        if (defaultQuery) return defaultQuery(query, this.state.currentValue);
+        if (defaultQuery) {
+          return defaultQuery(query, this.state.currentValue);
+        }
         return query;
       };
 
@@ -180,8 +214,17 @@ class SearchBox extends Component {
       }
       return;
     }
-    this.setState({ isOpen, currentValue: value });
+    this.setState({ isOpen, currentValue: value }, () => {
+      if (this.props.URLParams && value) {
+        window.history.replaceState(
+          { [this.props.searchTerm]: value },
+          '',
+          `?${this.props.searchTerm}=${value}`
+        );
+      }
+    });
     this.searchBase &&
+      value &&
       this.searchBase.setValue(value, {
         triggerSuggestionsQuery: true
       });
@@ -276,7 +319,7 @@ class SearchBox extends Component {
         )}
         {defaultSuggestions || autoSuggest ? (
           <Downshift
-            id='search-box-downshift'
+            id="search-box-downshift"
             onChange={this.onSuggestionSelected}
             onStateChange={this.handleStateChange}
             isOpen={isOpen}
@@ -293,7 +336,7 @@ class SearchBox extends Component {
             }) => (
               <div {...getRootProps({ css: suggestionsContainer })}>
                 <Input
-                  id='search-box'
+                  id="search-box"
                   showIcon={showIcon}
                   showClear={showClear}
                   iconPosition={iconPosition}
@@ -488,7 +531,9 @@ SearchBox.propTypes = {
   themePreset,
   onFocus: func,
   onKeyDown: func,
-  autoFocus: bool
+  autoFocus: bool,
+  searchTerm: string,
+  URLParams: bool
 };
 
 SearchBox.defaultProps = {
@@ -509,7 +554,8 @@ SearchBox.defaultProps = {
   themePreset: 'light',
   autoFocus: false,
   downShiftProps: {},
-  theme: {}
+  theme: {},
+  URLParams: false
 };
 
 export default SearchBox;

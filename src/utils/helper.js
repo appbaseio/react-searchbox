@@ -27,3 +27,11 @@ export const hasCustomRenderer = (props = {}) => {
 
 export const deepGet = (obj, keys) =>
   keys.reduce((xs, x) => (xs && xs[x] ? xs[x] : null), obj);
+
+export const getURLParameters = url =>
+  (url.match(/([^?=&]+)(=([^&]*))/g) || []).reduce(
+    (a, v) => (
+      (a[v.slice(0, v.indexOf('='))] = v.slice(v.indexOf('=') + 1)), a
+    ),
+    {}
+  );
