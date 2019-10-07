@@ -1,24 +1,33 @@
 import React from 'react';
-import Highlight from 'react-highlight-words';
-
-const highlightStyle = {
-  fontWeight: 600,
-  padding: 0,
-  backgroundColor: 'transparent',
-  color: 'inherit'
-};
+import { css, Global } from '@emotion/core';
 
 const SuggestionItem = ({ currentValue, suggestion }) => {
   const { label, value } = suggestion;
+  const stringToReplace = currentValue.split(' ').join('|');
   if (label) {
     // label has highest precedence
     return typeof label === 'string' ? (
-      <div className="trim">
-        <Highlight
-          searchWords={currentValue.split(' ')}
-          textToHighlight={label}
-          autoEscape
-          highlightStyle={highlightStyle}
+      <div>
+        <Global
+          styles={css`
+            .highlight-class {
+              font-weight: 600;
+              padding: 0;
+              background-color: transparent;
+              color: inherit;
+            }
+          `}
+        />
+        <div
+          className="trim"
+          dangerouslySetInnerHTML={{
+            __html: label.replace(
+              new RegExp(stringToReplace, 'ig'),
+              matched => {
+                return `<mark class="highlight-class">${matched}</mark>`;
+              }
+            )
+          }}
         />
       </div>
     ) : (

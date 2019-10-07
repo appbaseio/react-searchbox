@@ -17,7 +17,6 @@ export default {
     'downshift',
     '@emotion/core',
     '@emotion/styled',
-    'react-highlight-words',
     '@appbaseio/searchbase'
   ],
   output: [
