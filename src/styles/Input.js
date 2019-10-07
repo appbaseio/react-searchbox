@@ -1,9 +1,8 @@
 import { css } from '@emotion/core';
 import styled from '@emotion/styled';
-import { dark } from './Theme';
 
-const alertBorder = ({ theme }) => css`
-  border: 1px solid ${theme.colors.alertColor};
+const alertBorder = css`
+  border: 1px solid #d9534f;
 `;
 
 const input = css`
@@ -21,19 +20,8 @@ const input = css`
   }
 `;
 
-const darkInput = ({ theme }) => css`
-  background-color: ${theme.colors.backgroundColor};
-  color: ${theme.colors.textColor};
-  ${dark(theme)};
-
-  &:focus {
-    background-color: ${theme.colors.backgroundColor};
-  }
-`;
-
 const Input = styled.input`
   ${input}
-  ${({ themePreset }) => themePreset === 'dark' && darkInput};
 
   ${props =>
     props.showIcon &&

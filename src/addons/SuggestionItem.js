@@ -1,5 +1,4 @@
-/** @jsx jsx */
-import { jsx } from '@emotion/core';
+import React from 'react';
 import Highlight from 'react-highlight-words';
 
 const highlightStyle = {
@@ -14,7 +13,7 @@ const SuggestionItem = ({ currentValue, suggestion }) => {
   if (label) {
     // label has highest precedence
     return typeof label === 'string' ? (
-      <div className='trim'>
+      <div className="trim">
         <Highlight
           searchWords={currentValue.split(' ')}
           textToHighlight={label}

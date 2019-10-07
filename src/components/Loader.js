@@ -2,22 +2,10 @@ import React from 'react';
 import SuggestionWrapper from '../addons/SuggestionsWrapper';
 
 const Loader = props => {
-  const {
-    loader,
-    isLoading,
-    themePreset,
-    theme,
-    innerClass,
-    currentValue
-  } = props;
+  const { loader, isLoading, innerClass, currentValue } = props;
   if (isLoading && loader && currentValue) {
     return (
-      <SuggestionWrapper
-        innerClass={innerClass}
-        innerClassName='loader'
-        theme={theme}
-        themePreset={themePreset}
-      >
+      <SuggestionWrapper innerClass={innerClass} innerClassName="loader">
         {loader}
       </SuggestionWrapper>
     );

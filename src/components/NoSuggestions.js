@@ -3,8 +3,6 @@ import SuggestionWrapper from '../addons/SuggestionsWrapper';
 
 const NoSuggestions = props => {
   const {
-    themePreset,
-    theme,
     isLoading,
     renderNoSuggestion,
     innerClass,
@@ -26,8 +24,6 @@ const NoSuggestions = props => {
     return (
       <SuggestionWrapper
         innerClass={innerClass}
-        themePreset={themePreset}
-        theme={theme}
         innerClassName='noSuggestion'
       >
         {typeof renderNoSuggestion === 'function'

@@ -1,7 +1,7 @@
 import styled from '@emotion/styled';
 
 const right = `
-  right: 35px;
+  right: 42px;
 `;
 
 const MicIcon = styled.div`

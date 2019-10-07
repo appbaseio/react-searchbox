@@ -14,14 +14,13 @@ import {
   queryFormat,
   fuzziness,
   title,
-  any,
-  themePreset
+  any
 } from '../utils/types';
 import Input from '../styles/Input';
-import Container from '../styles/Container';
 import Title from '../styles/Title';
 import {
   deepGet,
+  equals,
   getClassName,
   getComponent,
   hasCustomRenderer
@@ -33,13 +32,15 @@ import Error from './Error';
 import SuggestionItem from '../addons/SuggestionItem';
 import NoSuggestions from './NoSuggestions';
 import Searchbase from '@appbaseio/searchbase';
-import getTheme, { composeThemeObject } from '../utils/theme';
-import { suggestions as suggestionsCss, suggestionsContainer } from '../styles/Suggestions';
+import {
+  suggestions as suggestionsCss,
+  suggestionsContainer
+} from '../styles/Suggestions';
 
 class SearchBox extends Component {
   constructor(props) {
     super(props);
-    const { onChange, value, defaultValue, defaultSuggestions } = props;
+    const { value, defaultValue, defaultSuggestions } = props;
     const currentValue = value || defaultValue || '';
 
     this.state = {
@@ -49,10 +50,9 @@ class SearchBox extends Component {
       error: null
     };
     this._initSearchBase();
-    if (onChange) onChange(currentValue, this.triggerQuery);
   }
 
-  componentDidUpdate(prevProps, prevState, snapshot) {
+  componentDidUpdate(prevProps) {
     const { dataField, headers, fuzziness, nestedField } = this.props;
     this._applySetter(prevProps.dataField, dataField, 'setDataField');
     this._applySetter(prevProps.headers, headers, 'setHeaders');
@@ -126,7 +126,8 @@ class SearchBox extends Component {
   };
 
   _applySetter = (prev, next, setterFunc) => {
-    if (prev !== next) this.searchBase && this.searchBase[setterFunc](next);
+    if (!equals(prev, next))
+      this.searchBase && this.searchBase[setterFunc](next);
   };
 
   setStateValue = ({ suggestions }) => {
@@ -174,26 +175,22 @@ class SearchBox extends Component {
   };
 
   setValue = ({ value, isOpen = true, ...rest }) => {
+    const { onChange } = this.props;
     if (this.props.value) {
-      if (this.props.onChange) {
-        this.props.onChange(value, this.triggerQuery, rest.event);
+      if (onChange) {
+        onChange(value, this.triggerQuery, rest.event);
       }
       return;
     }
-    this.setState({ isOpen, currentValue: value });
+    this.setState({ isOpen, currentValue: value || '' });
     this.searchBase &&
-      this.searchBase.setValue(value, {
+      this.searchBase.setValue(value || '', {
         triggerSuggestionsQuery: true
       });
   };
 
-  getBackgroundColor = (highlightedIndex, index) => {
-    const isDark = this.props.themePreset === 'dark';
-    if (isDark) {
-      return highlightedIndex === index ? '#555' : '#424242';
-    }
-    return highlightedIndex === index ? '#eee' : '#fff';
-  };
+  getBackgroundColor = (highlightedIndex, index) =>
+    highlightedIndex === index ? '#eee' : '#fff';
 
   handleSearchIconClick = () => {
     const { currentValue } = this.state;
@@ -207,9 +204,9 @@ class SearchBox extends Component {
   };
 
   onSuggestionSelected = suggestion => {
-    this.setValue({ value: suggestion.value, isOpen: false });
+    this.setValue({ value: suggestion && suggestion.value, isOpen: false });
     this.searchBase &&
-      this.searchBase.triggerClickAnalytics(suggestion._click_id);
+      this.searchBase.triggerClickAnalytics(suggestion && suggestion._click_id);
   };
 
   handleStateChange = changes => {
@@ -230,6 +227,39 @@ class SearchBox extends Component {
     }
   };
 
+  renderIcons = () => {
+    const {
+      iconPosition,
+      showClear,
+      clearIcon,
+      getMicInstance,
+      renderMic,
+      innerClass,
+      showVoiceSearch,
+      icon,
+      showIcon
+    } = this.props;
+    const { currentValue } = this.state;
+    return (
+      <Icons
+        clearValue={this.clearValue}
+        iconPosition={iconPosition}
+        showClear={showClear}
+        clearIcon={clearIcon}
+        currentValue={currentValue}
+        handleSearchIconClick={this.handleSearchIconClick}
+        icon={icon}
+        showIcon={showIcon}
+        getMicInstance={getMicInstance}
+        renderMic={renderMic}
+        innerClass={innerClass}
+        enableVoiceSearch={showVoiceSearch}
+        onMicClick={this.searchBase && this.searchBase.onMicClick}
+        micStatus={this.searchBase && this.searchBase.micStatus}
+      />
+    );
+  };
+
   render() {
     const {
       style,
@@ -245,38 +275,29 @@ class SearchBox extends Component {
       onBlur,
       onKeyPress,
       onKeyUp,
-      themePreset,
       downShiftProps,
       onFocus,
       onKeyDown,
       autoFocus,
-      clearIcon,
       loader,
       renderError,
       renderNoSuggestion,
-      icon,
-      value,
-      getMicInstance,
-      renderMic,
-      showVoiceSearch
+      value
     } = this.props;
-    const theme = composeThemeObject(getTheme(themePreset), this.props.theme);
+
     const isLoading =
       this.searchBase && this.searchBase.suggestionsRequestPending;
     const { isOpen, error, currentValue, suggestionsList } = this.state;
     return (
-      <Container style={style} className={className}>
+      <div style={style} className={className}>
         {title && (
-          <Title
-            theme={theme}
-            className={getClassName(innerClass, 'title') || null}
-          >
+          <Title className={getClassName(innerClass, 'title') || null}>
             {title}
           </Title>
         )}
         {defaultSuggestions || autoSuggest ? (
           <Downshift
-            id='search-box-downshift'
+            id="search-box-downshift"
             onChange={this.onSuggestionSelected}
             onStateChange={this.handleStateChange}
             isOpen={isOpen}
@@ -293,7 +314,7 @@ class SearchBox extends Component {
             }) => (
               <div {...getRootProps({ css: suggestionsContainer })}>
                 <Input
-                  id='search-box'
+                  id="search-box"
                   showIcon={showIcon}
                   showClear={showClear}
                   iconPosition={iconPosition}
@@ -308,26 +329,8 @@ class SearchBox extends Component {
                     onKeyUp: this.withTriggerQuery(onKeyUp),
                     onKeyDown: this.withTriggerQuery(onKeyDown)
                   })}
-                  themePreset={themePreset}
-                  theme={theme}
                 />
-                <Icons
-                  clearValue={this.clearValue}
-                  iconPosition={iconPosition}
-                  showClear={showClear}
-                  clearIcon={clearIcon}
-                  theme={theme}
-                  currentValue={currentValue}
-                  handleSearchIconClick={this.handleSearchIconClick}
-                  icon={icon}
-                  showIcon={showIcon}
-                  getMicInstance={getMicInstance}
-                  renderMic={renderMic}
-                  innerClass={innerClass}
-                  enableVoiceSearch={showVoiceSearch}
-                  onMicClick={this.searchBase && this.searchBase.onMicClick}
-                  micStatus={this.searchBase && this.searchBase.micStatus}
-                />
+                {this.renderIcons()}
                 {this.hasCustomRenderer && (
                   <div>
                     {this.getComponent({
@@ -340,8 +343,6 @@ class SearchBox extends Component {
                     <Loader
                       loader={loader}
                       isLoading={isLoading}
-                      themePreset={themePreset}
-                      theme={theme}
                       innerClass={innerClass}
                       currentValue={currentValue}
                     />
@@ -350,15 +351,13 @@ class SearchBox extends Component {
                 <Error
                   error={error}
                   renderError={renderError}
-                  themePreset={themePreset}
-                  theme={theme}
                   isLoading={isLoading}
                   innerClass={innerClass}
                   currentValue={currentValue}
                 />
                 {!this.hasCustomRenderer && isOpen && suggestionsList.length ? (
                   <ul
-                    css={suggestionsCss(themePreset, theme)}
+                    css={suggestionsCss}
                     className={getClassName(innerClass, 'list')}
                   >
                     {suggestionsList.slice(0, 10).map((item, index) => (
@@ -381,8 +380,6 @@ class SearchBox extends Component {
                   </ul>
                 ) : (
                   <NoSuggestions
-                    themePreset={themePreset}
-                    theme={theme}
                     isLoading={isLoading}
                     renderNoSuggestion={renderNoSuggestion}
                     innerClass={innerClass}
@@ -412,25 +409,11 @@ class SearchBox extends Component {
               iconPosition={iconPosition}
               showIcon={showIcon}
               showClear={showClear}
-              themePreset={themePreset}
             />
-            <Icons
-              clearValue={this.clearValue}
-              iconPosition={iconPosition}
-              showClear={showClear}
-              clearIcon={clearIcon}
-              theme={theme}
-              currentValue={currentValue}
-              getMicInstance={getMicInstance}
-              renderMic={renderMic}
-              innerClass={innerClass}
-              enableVoiceSearch={showVoiceSearch}
-              onMicClick={this.searchBase && this.searchBase.onMicClick}
-              micStatus={this.searchBase && this.searchBase.micStatus}
-            />
+            {this.renderIcons()}
           </div>
         )}
-      </Container>
+      </div>
     );
   }
 }
@@ -479,13 +462,11 @@ SearchBox.propTypes = {
   defaultQuery: func,
   beforeValueChange: func,
   onQueryChange: func,
-  theme: object,
   className: string,
   loader: object,
   onBlur: func,
   onKeyPress: func,
   onKeyUp: func,
-  themePreset,
   onFocus: func,
   onKeyDown: func,
   autoFocus: bool
@@ -506,10 +487,8 @@ SearchBox.defaultProps = {
   showVoiceSearch: false,
   searchOperators: false,
   className: '',
-  themePreset: 'light',
   autoFocus: false,
-  downShiftProps: {},
-  theme: {}
+  downShiftProps: {}
 };
 
 export default SearchBox;

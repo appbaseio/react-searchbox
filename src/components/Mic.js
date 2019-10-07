@@ -11,32 +11,29 @@ const STATUS = {
 
 const Icon = props => {
   const { status, ...rest } = props;
-
-  const imgRender = url => (
-    <img {...rest} src={url} style={{ width: '24px', marginTop: '7px' }} />
-  );
-
+  let url;
   if (!window.SpeechRecognition) {
-    return imgRender(
-      'https://cdn3.iconfinder.com/data/icons/glypho-music-and-sound/64/microphone-off-512.png'
-    );
+    url =
+      'https://cdn3.iconfinder.com/data/icons/glypho-music-and-sound/64/microphone-off-512.png';
   }
 
   switch (status) {
     case STATUS.active:
-      return imgRender(
-        'https://media.giphy.com/media/ZZr4lCvpuMP58PXzY1/giphy.gif'
-      );
+      url = 'https://media.giphy.com/media/ZZr4lCvpuMP58PXzY1/giphy.gif';
+      break;
     case STATUS.stopped:
+      break;
     case STATUS.denied:
-      return imgRender(
-        'https://cdn3.iconfinder.com/data/icons/glypho-music-and-sound/64/microphone-off-512.png'
-      );
+      url =
+        'https://cdn3.iconfinder.com/data/icons/glypho-music-and-sound/64/microphone-off-512.png';
+      break;
     default:
-      return imgRender(
-        'https://cdn3.iconfinder.com/data/icons/glypho-music-and-sound/64/microphone-512.png'
-      );
+      url =
+        'https://cdn3.iconfinder.com/data/icons/glypho-music-and-sound/64/microphone-512.png';
   }
+  return (
+    <img {...rest} src={url} style={{ width: '24px', marginTop: '7px' }} />
+  );
 };
 
 const Mic = props => {

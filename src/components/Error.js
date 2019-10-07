@@ -3,23 +3,10 @@ import SuggestionWrapper from '../addons/SuggestionsWrapper';
 import { isFunction } from '../utils/helper';
 
 const Error = props => {
-  const {
-    error,
-    renderError,
-    themePreset,
-    theme,
-    isLoading,
-    innerClass,
-    currentValue
-  } = props;
+  const { error, renderError, isLoading, innerClass, currentValue } = props;
   if (error && renderError && currentValue && !isLoading) {
     return (
-      <SuggestionWrapper
-        innerClass={innerClass}
-        innerClassName='error'
-        theme={theme}
-        themePreset={themePreset}
-      >
+      <SuggestionWrapper innerClass={innerClass} innerClassName="error">
         {isFunction(renderError) ? renderError(error) : renderError}
       </SuggestionWrapper>
     );
