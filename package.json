@@ -20,7 +20,7 @@
   },
   "scripts": {
     "build": "rollup -c",
-    "start": "rollup -c -w",
+    "start": "concurrently \"rollup -c -w\" \"yarn --cwd example start\" ",
     "prepare": "yarn run build",
     "predeploy": "cd example && yarn install && yarn run build",
     "deploy": "gh-pages -d example/build"
@@ -44,6 +44,7 @@
     "@svgr/rollup": "^2.4.1",
     "babel-eslint": "10.x",
     "babel-plugin-emotion": "^10.0.19",
+    "concurrently": "^5.0.0",
     "cross-env": "^5.1.4",
     "eslint": "6.x",
     "eslint-config-prettier": "^6.3.0",
