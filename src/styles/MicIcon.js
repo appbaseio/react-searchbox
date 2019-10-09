@@ -14,7 +14,7 @@ const MicIcon = styled.div`
     if (iconPosition === 'right') {
       return right;
     }
-    return null;
+    return 'right: 22px';
   }}
 `;
 

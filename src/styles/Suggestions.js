@@ -45,6 +45,12 @@ const suggestionsContainer = css`
   .cancel-icon {
     cursor: pointer;
   }
+  .no-suggestions {
+    border: 1px solid #ccc;
+    border-top: 0;
+    font-size: 0.9rem;
+    padding: 10px;
+  }
 `;
 
 export { suggestionsContainer, suggestions };

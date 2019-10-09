@@ -5,7 +5,6 @@ import {
   bool,
   string,
   object,
-  number,
   func,
   dataField,
   position,
@@ -21,23 +20,21 @@ import Input from '../styles/Input';
 import Title from '../styles/Title';
 import {
   debounce as debounceFunc,
-  deepGet,
   equals,
   getClassName,
   getComponent,
-  hasCustomRenderer
+  hasCustomRenderer,
+  isFunction
 } from '../utils/helper';
 import Downshift from 'downshift';
 import Icons from './Icons';
-import Loader from './Loader';
-import Error from './Error';
 import SuggestionItem from '../addons/SuggestionItem';
-import NoSuggestions from './NoSuggestions';
 import Searchbase from '@appbaseio/searchbase';
 import {
   suggestions as suggestionsCss,
   suggestionsContainer
 } from '../styles/Suggestions';
+import SuggestionWrapper from '../addons/SuggestionsWrapper';
 
 class SearchBox extends Component {
   constructor(props) {
@@ -49,13 +46,17 @@ class SearchBox extends Component {
       currentValue,
       suggestionsList: defaultSuggestions || [],
       isOpen: false,
-      error: null
+      error: null,
+      loading: false
     };
-    this._initSearchBase();
     this.triggerSuggestionsQuery = debounceFunc(
       this.triggerSuggestionsQuery,
       debounce
     );
+  }
+
+  componentDidMount() {
+    this._initSearchBase();
   }
 
   componentDidUpdate(prevProps) {
@@ -95,7 +96,7 @@ class SearchBox extends Component {
     try {
       const transformQuery = query => {
         if (defaultQuery) return defaultQuery(query, this.state.currentValue);
-        return query;
+        return Promise.resolve(query);
       };
 
       this.searchBase = new Searchbase({
@@ -126,7 +127,11 @@ class SearchBox extends Component {
         if (onError) onError(error);
       };
       this.searchBase.onResults = onResults;
+      this.searchBase.onSuggestionsRequestStatusChange = next => {
+        this.setState({ loading: next === 'PENDING' });
+      };
     } catch (e) {
+      this.setState({ initError: e });
       console.error(e);
     }
   };
@@ -136,19 +141,17 @@ class SearchBox extends Component {
       this.searchBase && this.searchBase[setterFunc](next);
   };
 
-  setStateValue = ({ suggestions }) => {
+  setStateValue = ({ suggestions = {} }) => {
     this.setState({
-      suggestionsList: deepGet(suggestions, ['next', 'data']) || []
+      suggestionsList: (suggestions.next && suggestions.next.data) || []
     });
   };
 
   getComponent = (downshiftProps = {}) => {
-    const { currentValue, suggestionsList, error } = this.state;
-    const isLoading =
-      this.searchBase && this.searchBase.suggestionsRequestPending;
+    const { currentValue, suggestionsList, error, loading } = this.state;
     const data = {
       error,
-      loading: isLoading,
+      loading,
       downshiftProps,
       data: suggestionsList,
       value: currentValue,
@@ -186,10 +189,10 @@ class SearchBox extends Component {
       if (onChange) {
         onChange(value, this.triggerQuery, rest.event);
       }
-      return;
+    } else {
+      this.setState({ isOpen, currentValue: value || '' });
+      this.triggerSuggestionsQuery(value);
     }
-    this.setState({ isOpen, currentValue: value || '' });
-    this.triggerSuggestionsQuery(value);
   };
 
   triggerSuggestionsQuery = value => {
@@ -270,6 +273,64 @@ class SearchBox extends Component {
     );
   };
 
+  renderNoSuggestion = () => {
+    const { renderNoSuggestion, innerClass, renderError } = this.props;
+    const {
+      loading,
+      error,
+      isOpen,
+      currentValue,
+      suggestionsList
+    } = this.state;
+    if (
+      renderNoSuggestion &&
+      isOpen &&
+      !suggestionsList.length &&
+      !loading &&
+      currentValue &&
+      !(renderError && error)
+    ) {
+      return (
+        <SuggestionWrapper
+          className="no-suggestions"
+          innerClass={innerClass}
+          innerClassName="noSuggestion"
+        >
+          {typeof renderNoSuggestion === 'function'
+            ? renderNoSuggestion(currentValue)
+            : renderNoSuggestion}
+        </SuggestionWrapper>
+      );
+    }
+    return null;
+  };
+
+  renderError = () => {
+    const { renderError, innerClass } = this.props;
+    const { error, loading, currentValue } = this.state;
+    if (error && renderError && currentValue && !loading) {
+      return (
+        <SuggestionWrapper innerClass={innerClass} innerClassName="error">
+          {isFunction(renderError) ? renderError(error) : renderError}
+        </SuggestionWrapper>
+      );
+    }
+    return null;
+  };
+
+  renderLoader = () => {
+    const { loader, innerClass } = this.props;
+    const { loading, currentValue } = this.state;
+    if (loading && loader && currentValue) {
+      return (
+        <SuggestionWrapper innerClass={innerClass} innerClassName="loader">
+          {loader}
+        </SuggestionWrapper>
+      );
+    }
+    return null;
+  };
+
   render() {
     const {
       style,
@@ -289,15 +350,16 @@ class SearchBox extends Component {
       onFocus,
       onKeyDown,
       autoFocus,
-      loader,
-      renderError,
-      renderNoSuggestion,
-      value
+      value,
+      renderError
     } = this.props;
 
-    const isLoading =
-      this.searchBase && this.searchBase.suggestionsRequestPending;
-    const { isOpen, error, currentValue, suggestionsList } = this.state;
+    const { isOpen, currentValue, suggestionsList, initError } = this.state;
+    if (initError) {
+      if (renderError)
+        return isFunction(renderError) ? renderError(initError) : renderError;
+      return <div>Error initializing SearchBase. Please try again.</div>;
+    }
     return (
       <div style={style} className={className}>
         {title && (
@@ -350,21 +412,10 @@ class SearchBox extends Component {
                       highlightedIndex,
                       ...rest
                     })}
-                    <Loader
-                      loader={loader}
-                      isLoading={isLoading}
-                      innerClass={innerClass}
-                      currentValue={currentValue}
-                    />
+                    {this.renderLoader()}
                   </div>
                 )}
-                <Error
-                  error={error}
-                  renderError={renderError}
-                  isLoading={isLoading}
-                  innerClass={innerClass}
-                  currentValue={currentValue}
-                />
+                {this.renderError()}
                 {!this.hasCustomRenderer && isOpen && suggestionsList.length ? (
                   <ul
                     css={suggestionsCss}
@@ -389,16 +440,7 @@ class SearchBox extends Component {
                     ))}
                   </ul>
                 ) : (
-                  <NoSuggestions
-                    isLoading={isLoading}
-                    renderNoSuggestion={renderNoSuggestion}
-                    innerClass={innerClass}
-                    error={error}
-                    renderError={renderError}
-                    suggestionsList={suggestionsList}
-                    isOpen={isOpen}
-                    currentValue={currentValue}
-                  />
+                  this.renderNoSuggestion()
                 )}
               </div>
             )}

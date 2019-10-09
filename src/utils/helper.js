@@ -25,9 +25,6 @@ export const hasCustomRenderer = (props = {}) => {
   return isFunction(children) || isFunction(render);
 };
 
-export const deepGet = (obj, keys) =>
-  keys.reduce((xs, x) => (xs && xs[x] ? xs[x] : null), obj);
-
 export const equals = (a, b) => {
   if (a === b) return true;
   if (!a || !b || (typeof a !== 'object' && typeof b !== 'object'))
