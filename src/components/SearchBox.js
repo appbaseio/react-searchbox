@@ -14,7 +14,8 @@ import {
   queryFormat,
   fuzziness,
   title,
-  any
+  any,
+  wholeNumber
 } from '../utils/types';
 import Input from '../styles/Input';
 import Title from '../styles/Title';
@@ -448,7 +449,7 @@ SearchBox.propTypes = {
   autosuggest: bool,
   strictSelection: bool,
   defaultSuggestions: suggestions,
-  debounce: number,
+  debounce: wholeNumber,
   highlight: bool,
   highlightField,
   customHighlight: func,
