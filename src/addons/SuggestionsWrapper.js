@@ -1,8 +1,15 @@
 import React from 'react';
 import { getClassName } from '../utils/helper';
 
-const SuggestionWrapper = ({ children, innerClassName, innerClass }) => (
-  <div className={getClassName(innerClass, innerClassName || '')}>
+const SuggestionWrapper = ({
+  className,
+  children,
+  innerClassName,
+  innerClass
+}) => (
+  <div
+    className={`${className} ${getClassName(innerClass, innerClassName || '')}`}
+  >
     {children}
   </div>
 );

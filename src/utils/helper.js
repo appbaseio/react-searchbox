@@ -39,3 +39,14 @@ export const equals = (a, b) => {
   if (keys.length !== Object.keys(b).length) return false;
   return keys.every(k => equals(a[k], b[k]));
 };
+
+export const debounce = (fn, delay) => {
+  let timer = null;
+  return function(...args) {
+    const context = this;
+    timer && clearTimeout(timer);
+    timer = setTimeout(() => {
+      fn.apply(context, args);
+    }, delay);
+  };
+};

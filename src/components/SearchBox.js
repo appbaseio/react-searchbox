@@ -19,6 +19,7 @@ import {
 import Input from '../styles/Input';
 import Title from '../styles/Title';
 import {
+  debounce as debounceFunc,
   deepGet,
   equals,
   getClassName,
@@ -40,7 +41,7 @@ import {
 class SearchBox extends Component {
   constructor(props) {
     super(props);
-    const { value, defaultValue, defaultSuggestions } = props;
+    const { value, defaultValue, defaultSuggestions, debounce } = props;
     const currentValue = value || defaultValue || '';
 
     this.state = {
@@ -50,6 +51,10 @@ class SearchBox extends Component {
       error: null
     };
     this._initSearchBase();
+    this.triggerSuggestionsQuery = debounceFunc(
+      this.triggerSuggestionsQuery,
+      debounce
+    );
   }
 
   componentDidUpdate(prevProps) {
@@ -183,6 +188,10 @@ class SearchBox extends Component {
       return;
     }
     this.setState({ isOpen, currentValue: value || '' });
+    this.triggerSuggestionsQuery(value);
+  };
+
+  triggerSuggestionsQuery = value => {
     this.searchBase &&
       this.searchBase.setValue(value || '', {
         triggerSuggestionsQuery: true
@@ -267,7 +276,7 @@ class SearchBox extends Component {
       title,
       innerClass,
       defaultSuggestions,
-      autoSuggest,
+      autosuggest,
       showIcon,
       showClear,
       iconPosition,
@@ -295,7 +304,7 @@ class SearchBox extends Component {
             {title}
           </Title>
         )}
-        {defaultSuggestions || autoSuggest ? (
+        {defaultSuggestions || autosuggest ? (
           <Downshift
             id="search-box-downshift"
             onChange={this.onSuggestionSelected}
@@ -436,7 +445,7 @@ SearchBox.propTypes = {
   icon: any,
   showClear: bool,
   clearIcon: any,
-  autoSuggest: bool,
+  autosuggest: bool,
   strictSelection: bool,
   defaultSuggestions: suggestions,
   debounce: number,
@@ -479,7 +488,7 @@ SearchBox.defaultProps = {
   showIcon: true,
   iconPosition: 'right',
   showClear: false,
-  autoSuggest: true,
+  autosuggest: true,
   strictSelection: false,
   debounce: 0,
   highlight: false,

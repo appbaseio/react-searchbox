@@ -1,4 +1,5 @@
 import React from 'react';
+import { Global, css } from '@emotion/core';
 import SuggestionWrapper from '../addons/SuggestionsWrapper';
 
 const NoSuggestions = props => {
@@ -22,14 +23,27 @@ const NoSuggestions = props => {
     !(renderError && error)
   ) {
     return (
-      <SuggestionWrapper
-        innerClass={innerClass}
-        innerClassName='noSuggestion'
-      >
-        {typeof renderNoSuggestion === 'function'
-          ? renderNoSuggestion(currentValue)
-          : renderNoSuggestion}
-      </SuggestionWrapper>
+      <div>
+        <Global
+          styles={css`
+            .no-suggestions {
+              border: 1px solid #ccc;
+              border-top: 0;
+              font-size: 0.9rem;
+              padding: 10px;
+            }
+          `}
+        />
+        <SuggestionWrapper
+          className="no-suggestions"
+          innerClass={innerClass}
+          innerClassName="noSuggestion"
+        >
+          {typeof renderNoSuggestion === 'function'
+            ? renderNoSuggestion(currentValue)
+            : renderNoSuggestion}
+        </SuggestionWrapper>
+      </div>
     );
   }
   return null;
