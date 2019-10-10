@@ -114,13 +114,15 @@ class SearchBox extends Component {
         fuzziness,
         searchOperators
       });
-
       this.searchBase.subscribeToStateChanges(this.setStateValue, [
         'suggestions'
       ]);
 
       this.searchBase.onQueryChange = onQueryChange;
-      this.searchBase.onValueChange = onValueChange;
+      this.searchBase.onValueChange = (next, prev) => {
+        if (prev !== next) this.setState({ currentValue: next });
+        if (onValueChange) onValueChange(next, prev);
+      };
       this.searchBase.onSuggestions = onSuggestions;
       this.searchBase.onError = error => {
         this.setState({ error });
@@ -129,6 +131,15 @@ class SearchBox extends Component {
       this.searchBase.onResults = onResults;
       this.searchBase.onSuggestionsRequestStatusChange = next => {
         this.setState({ loading: next === 'PENDING' });
+      };
+      this.searchBase.onMicStatusChange = next => {
+        this.setState(prevState => {
+          const { loading } = prevState;
+          return {
+            micStatus: next,
+            isOpen: next === 'INACTIVE' && !loading
+          };
+        });
       };
     } catch (e) {
       this.setState({ initError: e });
@@ -190,7 +201,7 @@ class SearchBox extends Component {
         onChange(value, this.triggerQuery, rest.event);
       }
     } else {
-      this.setState({ isOpen, currentValue: value || '' });
+      this.setState({ isOpen });
       this.triggerSuggestionsQuery(value);
     }
   };
@@ -252,7 +263,7 @@ class SearchBox extends Component {
       icon,
       showIcon
     } = this.props;
-    const { currentValue } = this.state;
+    const { currentValue, micStatus } = this.state;
     return (
       <Icons
         clearValue={this.clearValue}
@@ -267,8 +278,11 @@ class SearchBox extends Component {
         renderMic={renderMic}
         innerClass={innerClass}
         enableVoiceSearch={showVoiceSearch}
-        onMicClick={this.searchBase && this.searchBase.onMicClick}
-        micStatus={this.searchBase && this.searchBase.micStatus}
+        onMicClick={() => {
+          this.searchBase &&
+            this.searchBase.onMicClick(null, { triggerSuggestionsQuery: true });
+        }}
+        micStatus={micStatus}
       />
     );
   };
