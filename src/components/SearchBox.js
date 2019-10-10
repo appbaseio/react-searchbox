@@ -195,13 +195,15 @@ class SearchBox extends Component {
   };
 
   setValue = ({ value, isOpen = true, ...rest }) => {
-    const { onChange } = this.props;
+    const { onChange, debounce } = this.props;
     if (this.props.value) {
       if (onChange) {
         onChange(value, this.triggerQuery, rest.event);
       }
     } else {
       this.setState({ isOpen });
+      if (debounce > 0)
+        this.searchBase.setValue(value, { triggerQuery: false });
       this.triggerSuggestionsQuery(value);
     }
   };
