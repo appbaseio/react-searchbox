@@ -120,7 +120,7 @@ class SearchBox extends Component {
 
       this.searchBase.onQueryChange = onQueryChange;
       this.searchBase.onValueChange = (next, prev) => {
-        if (prev !== next) this.setState({ currentValue: next });
+        this.setState({ currentValue: next });
         if (onValueChange) onValueChange(next, prev);
       };
       this.searchBase.onSuggestions = onSuggestions;
@@ -347,6 +347,17 @@ class SearchBox extends Component {
     return null;
   };
 
+  handleKeyDown = (event, highlightedIndex) => {
+    // if a suggestion was selected, delegate the handling
+    // to suggestion handler
+    if (event.key === 'Enter' && highlightedIndex === null)
+      this.setValue({ value: event.target.value, isOpen: false });
+
+    if (this.props.onKeyDown) {
+      this.props.onKeyDown(event, this.triggerQuery);
+    }
+  };
+
   render() {
     const {
       style,
@@ -415,7 +426,7 @@ class SearchBox extends Component {
                     onFocus: this.handleFocus,
                     onKeyPress: this.withTriggerQuery(onKeyPress),
                     onKeyUp: this.withTriggerQuery(onKeyUp),
-                    onKeyDown: this.withTriggerQuery(onKeyDown)
+                    onKeyDown: e => this.handleKeyDown(e, highlightedIndex)
                   })}
                 />
                 {this.renderIcons()}
