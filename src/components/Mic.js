@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { Component } from 'react';
 import MicIcon from '../styles/MicIcon';
 import { hasCustomRenderer as hcr, getComponent as gc } from '../utils/helper';
 
@@ -36,26 +36,36 @@ const Icon = props => {
   );
 };
 
-const Mic = props => {
-  const { iconPosition, className, onClick, status } = props;
+class Mic extends Component {
+  shouldComponentUpdate(nextProps, nextState, nextContext) {
+    return (
+      nextProps.iconPosition !== this.props.iconPosition ||
+      nextProps.className !== this.props.className ||
+      nextProps.status !== this.props.status
+    );
+  }
 
-  const getComponent = () => {
-    const data = {
-      onClick,
-      status
+  render() {
+    const { iconPosition, className, onClick, status } = this.props;
+
+    const getComponent = () => {
+      const data = {
+        onClick,
+        status
+      };
+      return gc(data, this.props);
     };
-    return gc(data, props);
-  };
 
-  const hasCustomRenderer = hcr(props);
+    const hasCustomRenderer = hcr(this.props);
 
-  if (hasCustomRenderer) return getComponent();
+    if (hasCustomRenderer) return getComponent();
 
-  return (
-    <MicIcon iconPosition={iconPosition}>
-      <Icon className={className} onClick={onClick} status={status} />
-    </MicIcon>
-  );
-};
+    return (
+      <MicIcon iconPosition={iconPosition}>
+        <Icon className={className} onClick={onClick} status={status} />
+      </MicIcon>
+    );
+  }
+}
 
 export default Mic;
