@@ -1,10 +1,6 @@
 import { css } from '@emotion/core';
 import styled from '@emotion/styled';
 
-const alertBorder = css`
-  border: 1px solid #d9534f;
-`;
-
 const input = css`
   width: 100%;
   height: 42px;
@@ -52,8 +48,6 @@ const Input = styled.input`
     css`
       padding-right: 48px;
     `};
-
-  ${props => props.alert && alertBorder};
 `;
 
 export default Input;
