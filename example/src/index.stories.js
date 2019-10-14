@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import SearchBox from 'react-searchbox-zzzzz';
+import SearchBox from '@appbaseio/react-searchbox';
 
 export default { title: 'SearchBox' };
 
