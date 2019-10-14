@@ -1,12 +1,21 @@
 import React from 'react';
-import ReactDOM from 'react-dom';
-import './index.css';
-import App from './App';
-import * as serviceWorker from './serviceWorker';
+import SearchBox from './components/SearchBox';
+import { Global, css } from '@emotion/core';
 
-ReactDOM.render(<App />, document.getElementById('root'));
+const SearchBoxWithStyle = props => (
+  <div>
+    <Global
+      styles={css`
+        * {
+          margin: 0;
+          font-family: inherit;
+          -webkit-font-smoothing: antialiased;
+          -moz-osx-font-smoothing: grayscale;
+        }
+      `}
+    />
+    <SearchBox {...props} />
+  </div>
+);
 
-// If you want your app to work offline and load faster, you can change
-// unregister() to register() below. Note this comes with some pitfalls.
-// Learn more about service workers: https://bit.ly/CRA-PWA
-serviceWorker.unregister();
+export default SearchBoxWithStyle;

@@ -46,4 +46,10 @@ export const fuzziness = PropTypes.oneOf([0, 1, 2, 'AUTO']);
 
 export const title = PropTypes.oneOfType([string, any]);
 
-export const themePreset = PropTypes.oneOf(['dark', 'light']);
+export const wholeNumber = function(props, propName, componentName) {
+  if (typeof props[propName] != 'number' || props[propName] < 0) {
+    return new Error(
+      `Invalid type of ${propName} supplied to ${componentName}. Validation failed`
+    );
+  }
+};

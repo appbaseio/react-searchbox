@@ -25,5 +25,25 @@ export const hasCustomRenderer = (props = {}) => {
   return isFunction(children) || isFunction(render);
 };
 
-export const deepGet = (obj, keys) =>
-  keys.reduce((xs, x) => (xs && xs[x] ? xs[x] : null), obj);
+export const equals = (a, b) => {
+  if (a === b) return true;
+  if (!a || !b || (typeof a !== 'object' && typeof b !== 'object'))
+    return a === b;
+  if (a === null || a === undefined || b === null || b === undefined)
+    return false;
+  if (a.prototype !== b.prototype) return false;
+  let keys = Object.keys(a);
+  if (keys.length !== Object.keys(b).length) return false;
+  return keys.every(k => equals(a[k], b[k]));
+};
+
+export const debounce = (fn, delay) => {
+  let timer = null;
+  return function(...args) {
+    const context = this;
+    timer && clearTimeout(timer);
+    timer = setTimeout(() => {
+      fn.apply(context, args);
+    }, delay);
+  };
+};
