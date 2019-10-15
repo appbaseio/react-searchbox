@@ -21,7 +21,6 @@
   "scripts": {
     "build": "rollup -c",
     "start": "concurrently \"rollup -c -w\" \"yarn --cwd example start\" ",
-    "prepare": "yarn run build",
     "predeploy": "cd example && yarn install && yarn run build",
     "deploy": "gh-pages -d example/build"
   },
