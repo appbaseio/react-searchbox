@@ -11,7 +11,7 @@
 
 1. **[Intro](#1-intro)**
 2. **[Features](#2-features)**
-3. **[Live Examples](#3-usage)**
+3. **[Usage](#3-usage)**
 4. **[Installation](#4-installation)**
 5. **[Docs Manual](#5-docs-manual)**
 6. **[Contributing](#6-contributing)**
