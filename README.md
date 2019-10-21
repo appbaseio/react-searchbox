@@ -19,11 +19,13 @@
 
 <br />
 
-##1 Intro
+## 1. Intro
+
 `React SearchBox` offers a lightweight (~30KB: Minified + Gzipped) and performance focused searchbox UI component to query and display results from your ElasticSearch app (aka index) using declarative props. It is an alternative to using the [DataSearch component](https://docs.appbase.io/docs/reactivesearch/v3/search/datasearch/) from ReactiveSearch.
+
 [⬆ Back to Top](#toc)
 
-##2 Features
+## 2. Features
 
 - Design search experiences with best practices
 - Customize your components at will
@@ -31,7 +33,7 @@
 
 [⬆ Back to Top](#toc)
 
-##3 Usage
+## 3. Usage
 
 ### Basic Usage
 
@@ -72,7 +74,7 @@
 
 [⬆ Back to Top](#toc)
 
-##4 Installation
+## 4. Installation
 
 ```bash
 npm install @appbaseio/react-searchbox
@@ -82,15 +84,19 @@ yarn add @appbaseio/react-searchbox
 
 [⬆ Back to Top](#toc)
 
-##5 Docs Manual
+## 5. Docs Manual
+
 The official docs for the library are at [docs/react-searchbox](https://docs.appbase.io/docs/reactivesearch/react-searchbox/quickstart/)
+
 [⬆ Back to Top](#toc)
 
-##6 Contributing
+## 6. Contributing
+
 Please check the [contribution guide](./CONTRIBUTING.md)
+
 [⬆ Back to Top](#toc)
 
-##7 Other Projects You Might Like
+## 7. Other Projects You Might Like
 
 - [**dejavu**](https://github.com/appbaseio/dejavu) allows viewing raw data within an appbase.io (or Elasticsearch) app. **Soon to be released feature:** An ability to import custom data from CSV and JSON files, along with a guided walkthrough on applying data mappings.
 

@@ -21,6 +21,9 @@ yarn
 ```
 
 6. You can run the following command from root which will start the watchers and run example from [here](./example). This will let you make changes to these projects on the fly and the files will be transpiled and updated instantly:
+```bash
+yarn start
+```
 
 7. You can also test using `storybook`, by going inside `example` directory and run:
 ```bash
