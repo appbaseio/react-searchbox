@@ -48,10 +48,14 @@ export const debounce = (fn, delay) => {
   };
 };
 
-export const getURLParameters = url =>
-  (url.match(/([^?=&]+)(=([^&]*))/g) || []).reduce(
-    (a, v) => (
-      (a[v.slice(0, v.indexOf('='))] = v.slice(v.indexOf('=') + 1)), a
-    ),
-    {}
-  );
+export const getURLParameters = url => {
+  const keyVal = {};
+  url.replace(/[?&]+([^=&]+)=([^&]*)/gi, function(m, key, value) {
+    key = decodeURIComponent(key);
+    value = decodeURIComponent(value);
+    keyVal[key] = value;
+  });
+  return keyVal;
+};
+
+export const isEmpty = val => val == null || !(Object.keys(val) || val).length;

@@ -25,6 +25,7 @@ import {
   getComponent,
   getURLParameters,
   hasCustomRenderer,
+  isEmpty,
   isFunction
 } from '../utils/helper';
 import Downshift from 'downshift';
@@ -233,11 +234,11 @@ class SearchBox extends Component {
       if (debounce > 0)
         this.searchBase.setValue(value, { triggerQuery: false });
       this.triggerSuggestionsQuery(value);
-      if (URLParams && value) {
+      if (URLParams) {
         window.history.replaceState(
-          { [searchTerm]: value },
-          '',
-          `?${searchTerm}=${value}`
+          !isEmpty(value) ? { [searchTerm]: value } : null,
+          null,
+          !isEmpty(value) ? `?${searchTerm}=${value}` : window.location.origin
         );
       }
     }
@@ -245,7 +246,6 @@ class SearchBox extends Component {
 
   triggerSuggestionsQuery = value => {
     this.searchBase &&
-      value &&
       this.searchBase.setValue(value || '', {
         triggerSuggestionsQuery: true
       });
