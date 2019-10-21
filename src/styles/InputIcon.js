@@ -18,7 +18,7 @@ const clear = `
 
 const InputIcon = styled.div`
   position: absolute;
-  top: calc(50% - 8px);
+  top: 13px;
   cursor: pointer;
   ${({ iconPosition }) => {
     if (iconPosition === 'left') {
@@ -28,14 +28,10 @@ const InputIcon = styled.div`
     }
     return null;
   }};
-  ${({ clearIcon }) => clearIcon && clear}};
+  ${({ clearIcon }) => clearIcon && clear};
 
   svg.search-icon {
-    fill: ${({ theme }) => theme.colors.primaryColor};
-  }
-
-  svg.cancel-icon {
-    fill: ${({ theme }) => theme.colors.borderColor};
+    fill: #0b6aff;
   }
 `;
 

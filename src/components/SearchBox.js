@@ -5,7 +5,6 @@ import {
   bool,
   string,
   object,
-  number,
   func,
   dataField,
   position,
@@ -15,48 +14,50 @@ import {
   fuzziness,
   title,
   any,
-  themePreset
+  wholeNumber
 } from '../utils/types';
 import Input from '../styles/Input';
-import Container from '../styles/Container';
 import Title from '../styles/Title';
 import {
-  deepGet,
+  debounce as debounceFunc,
+  equals,
   getClassName,
   getComponent,
   getURLParameters,
-  hasCustomRenderer
+  hasCustomRenderer,
+  isFunction
 } from '../utils/helper';
 import Downshift from 'downshift';
 import Icons from './Icons';
-import Loader from './Loader';
-import Error from './Error';
 import SuggestionItem from '../addons/SuggestionItem';
-import NoSuggestions from './NoSuggestions';
 import Searchbase from '@appbaseio/searchbase';
-import getTheme, { composeThemeObject } from '../utils/theme';
 import {
   suggestions as suggestionsCss,
   suggestionsContainer
 } from '../styles/Suggestions';
+import SuggestionWrapper from '../addons/SuggestionsWrapper';
 
 class SearchBox extends Component {
   constructor(props) {
     super(props);
-    const { onChange, value, defaultValue, defaultSuggestions } = props;
+    const { value, defaultValue, defaultSuggestions, debounce } = props;
     const currentValue = value || defaultValue || '';
 
     this.state = {
       currentValue,
       suggestionsList: defaultSuggestions || [],
       isOpen: false,
-      error: null
+      error: null,
+      loading: false
     };
-    this._initSearchBase();
-    if (onChange) onChange(currentValue, this.triggerQuery);
+    this.triggerSuggestionsQuery = debounceFunc(
+      this.triggerSuggestionsQuery,
+      debounce
+    );
   }
 
   componentDidMount() {
+    this._initSearchBase();
     if (this.props.URLParams) {
       this.setValue({
         value: this.getSearchTerm(this.props.currUrl),
@@ -65,7 +66,7 @@ class SearchBox extends Component {
     }
   }
 
-  componentDidUpdate(prevProps, prevState, snapshot) {
+  componentDidUpdate(prevProps) {
     const {
       dataField,
       headers,
@@ -123,7 +124,7 @@ class SearchBox extends Component {
         if (defaultQuery) {
           return defaultQuery(query, this.state.currentValue);
         }
-        return query;
+        return Promise.resolve(query);
       };
 
       this.searchBase = new Searchbase({
@@ -141,41 +142,55 @@ class SearchBox extends Component {
         fuzziness,
         searchOperators
       });
-
       this.searchBase.subscribeToStateChanges(this.setStateValue, [
         'suggestions'
       ]);
 
       this.searchBase.onQueryChange = onQueryChange;
-      this.searchBase.onValueChange = onValueChange;
+      this.searchBase.onValueChange = (next, prev) => {
+        this.setState({ currentValue: next });
+        if (onValueChange) onValueChange(next, prev);
+      };
       this.searchBase.onSuggestions = onSuggestions;
       this.searchBase.onError = error => {
         this.setState({ error });
         if (onError) onError(error);
       };
       this.searchBase.onResults = onResults;
+      this.searchBase.onSuggestionsRequestStatusChange = next => {
+        this.setState({ loading: next === 'PENDING' });
+      };
+      this.searchBase.onMicStatusChange = next => {
+        this.setState(prevState => {
+          const { loading } = prevState;
+          return {
+            micStatus: next,
+            isOpen: next === 'INACTIVE' && !loading
+          };
+        });
+      };
     } catch (e) {
+      this.setState({ initError: e });
       console.error(e);
     }
   };
 
   _applySetter = (prev, next, setterFunc) => {
-    if (prev !== next) this.searchBase && this.searchBase[setterFunc](next);
+    if (!equals(prev, next))
+      this.searchBase && this.searchBase[setterFunc](next);
   };
 
-  setStateValue = ({ suggestions }) => {
+  setStateValue = ({ suggestions = {} }) => {
     this.setState({
-      suggestionsList: deepGet(suggestions, ['next', 'data']) || []
+      suggestionsList: (suggestions.next && suggestions.next.data) || []
     });
   };
 
   getComponent = (downshiftProps = {}) => {
-    const { currentValue, suggestionsList, error } = this.state;
-    const isLoading =
-      this.searchBase && this.searchBase.suggestionsRequestPending;
+    const { currentValue, suggestionsList, error, loading } = this.state;
     const data = {
       error,
-      loading: isLoading,
+      loading,
       downshiftProps,
       data: suggestionsList,
       value: currentValue,
@@ -208,35 +223,36 @@ class SearchBox extends Component {
   };
 
   setValue = ({ value, isOpen = true, ...rest }) => {
+    const { onChange, debounce, URLParams, searchTerm } = this.props;
     if (this.props.value) {
-      if (this.props.onChange) {
-        this.props.onChange(value, this.triggerQuery, rest.event);
+      if (onChange) {
+        onChange(value, this.triggerQuery, rest.event);
       }
-      return;
-    }
-    this.setState({ isOpen, currentValue: value }, () => {
-      if (this.props.URLParams && value) {
+    } else {
+      this.setState({ isOpen });
+      if (debounce > 0)
+        this.searchBase.setValue(value, { triggerQuery: false });
+      this.triggerSuggestionsQuery(value);
+      if (URLParams && value) {
         window.history.replaceState(
-          { [this.props.searchTerm]: value },
+          { [searchTerm]: value },
           '',
-          `?${this.props.searchTerm}=${value}`
+          `?${searchTerm}=${value}`
         );
       }
-    });
+    }
+  };
+
+  triggerSuggestionsQuery = value => {
     this.searchBase &&
       value &&
-      this.searchBase.setValue(value, {
+      this.searchBase.setValue(value || '', {
         triggerSuggestionsQuery: true
       });
   };
 
-  getBackgroundColor = (highlightedIndex, index) => {
-    const isDark = this.props.themePreset === 'dark';
-    if (isDark) {
-      return highlightedIndex === index ? '#555' : '#424242';
-    }
-    return highlightedIndex === index ? '#eee' : '#fff';
-  };
+  getBackgroundColor = (highlightedIndex, index) =>
+    highlightedIndex === index ? '#eee' : '#fff';
 
   handleSearchIconClick = () => {
     const { currentValue } = this.state;
@@ -250,9 +266,9 @@ class SearchBox extends Component {
   };
 
   onSuggestionSelected = suggestion => {
-    this.setValue({ value: suggestion.value, isOpen: false });
+    this.setValue({ value: suggestion && suggestion.value, isOpen: false });
     this.searchBase &&
-      this.searchBase.triggerClickAnalytics(suggestion._click_id);
+      this.searchBase.triggerClickAnalytics(suggestion && suggestion._click_id);
   };
 
   handleStateChange = changes => {
@@ -273,6 +289,111 @@ class SearchBox extends Component {
     }
   };
 
+  renderIcons = () => {
+    const {
+      iconPosition,
+      showClear,
+      clearIcon,
+      getMicInstance,
+      renderMic,
+      innerClass,
+      showVoiceSearch,
+      icon,
+      showIcon
+    } = this.props;
+    const { currentValue, micStatus } = this.state;
+    return (
+      <Icons
+        clearValue={this.clearValue}
+        iconPosition={iconPosition}
+        showClear={showClear}
+        clearIcon={clearIcon}
+        currentValue={currentValue}
+        handleSearchIconClick={this.handleSearchIconClick}
+        icon={icon}
+        showIcon={showIcon}
+        getMicInstance={getMicInstance}
+        renderMic={renderMic}
+        innerClass={innerClass}
+        enableVoiceSearch={showVoiceSearch}
+        onMicClick={() => {
+          this.searchBase &&
+            this.searchBase.onMicClick(null, { triggerSuggestionsQuery: true });
+        }}
+        micStatus={micStatus}
+      />
+    );
+  };
+
+  renderNoSuggestion = () => {
+    const { renderNoSuggestion, innerClass, renderError } = this.props;
+    const {
+      loading,
+      error,
+      isOpen,
+      currentValue,
+      suggestionsList
+    } = this.state;
+    if (
+      renderNoSuggestion &&
+      isOpen &&
+      !suggestionsList.length &&
+      !loading &&
+      currentValue &&
+      !(renderError && error)
+    ) {
+      return (
+        <SuggestionWrapper
+          className="no-suggestions"
+          innerClass={innerClass}
+          innerClassName="noSuggestion"
+        >
+          {typeof renderNoSuggestion === 'function'
+            ? renderNoSuggestion(currentValue)
+            : renderNoSuggestion}
+        </SuggestionWrapper>
+      );
+    }
+    return null;
+  };
+
+  renderError = () => {
+    const { renderError, innerClass } = this.props;
+    const { error, loading, currentValue } = this.state;
+    if (error && renderError && currentValue && !loading) {
+      return (
+        <SuggestionWrapper innerClass={innerClass} innerClassName="error">
+          {isFunction(renderError) ? renderError(error) : renderError}
+        </SuggestionWrapper>
+      );
+    }
+    return null;
+  };
+
+  renderLoader = () => {
+    const { loader, innerClass } = this.props;
+    const { loading, currentValue } = this.state;
+    if (loading && loader && currentValue) {
+      return (
+        <SuggestionWrapper innerClass={innerClass} innerClassName="loader">
+          {loader}
+        </SuggestionWrapper>
+      );
+    }
+    return null;
+  };
+
+  handleKeyDown = (event, highlightedIndex) => {
+    // if a suggestion was selected, delegate the handling
+    // to suggestion handler
+    if (event.key === 'Enter' && highlightedIndex === null)
+      this.setValue({ value: event.target.value, isOpen: false });
+
+    if (this.props.onKeyDown) {
+      this.props.onKeyDown(event, this.triggerQuery);
+    }
+  };
+
   render() {
     const {
       style,
@@ -280,7 +401,7 @@ class SearchBox extends Component {
       title,
       innerClass,
       defaultSuggestions,
-      autoSuggest,
+      autosuggest,
       showIcon,
       showClear,
       iconPosition,
@@ -288,36 +409,28 @@ class SearchBox extends Component {
       onBlur,
       onKeyPress,
       onKeyUp,
-      themePreset,
       downShiftProps,
       onFocus,
       onKeyDown,
       autoFocus,
-      clearIcon,
-      loader,
-      renderError,
-      renderNoSuggestion,
-      icon,
       value,
-      getMicInstance,
-      renderMic,
-      showVoiceSearch
+      renderError
     } = this.props;
-    const theme = composeThemeObject(getTheme(themePreset), this.props.theme);
-    const isLoading =
-      this.searchBase && this.searchBase.suggestionsRequestPending;
-    const { isOpen, error, currentValue, suggestionsList } = this.state;
+
+    const { isOpen, currentValue, suggestionsList, initError } = this.state;
+    if (initError) {
+      if (renderError)
+        return isFunction(renderError) ? renderError(initError) : renderError;
+      return <div>Error initializing SearchBase. Please try again.</div>;
+    }
     return (
-      <Container style={style} className={className}>
+      <div style={style} className={className}>
         {title && (
-          <Title
-            theme={theme}
-            className={getClassName(innerClass, 'title') || null}
-          >
+          <Title className={getClassName(innerClass, 'title') || null}>
             {title}
           </Title>
         )}
-        {defaultSuggestions || autoSuggest ? (
+        {defaultSuggestions || autosuggest ? (
           <Downshift
             id="search-box-downshift"
             onChange={this.onSuggestionSelected}
@@ -349,28 +462,10 @@ class SearchBox extends Component {
                     onFocus: this.handleFocus,
                     onKeyPress: this.withTriggerQuery(onKeyPress),
                     onKeyUp: this.withTriggerQuery(onKeyUp),
-                    onKeyDown: this.withTriggerQuery(onKeyDown)
+                    onKeyDown: e => this.handleKeyDown(e, highlightedIndex)
                   })}
-                  themePreset={themePreset}
-                  theme={theme}
                 />
-                <Icons
-                  clearValue={this.clearValue}
-                  iconPosition={iconPosition}
-                  showClear={showClear}
-                  clearIcon={clearIcon}
-                  theme={theme}
-                  currentValue={currentValue}
-                  handleSearchIconClick={this.handleSearchIconClick}
-                  icon={icon}
-                  showIcon={showIcon}
-                  getMicInstance={getMicInstance}
-                  renderMic={renderMic}
-                  innerClass={innerClass}
-                  enableVoiceSearch={showVoiceSearch}
-                  onMicClick={this.searchBase && this.searchBase.onMicClick}
-                  micStatus={this.searchBase && this.searchBase.micStatus}
-                />
+                {this.renderIcons()}
                 {this.hasCustomRenderer && (
                   <div>
                     {this.getComponent({
@@ -380,28 +475,13 @@ class SearchBox extends Component {
                       highlightedIndex,
                       ...rest
                     })}
-                    <Loader
-                      loader={loader}
-                      isLoading={isLoading}
-                      themePreset={themePreset}
-                      theme={theme}
-                      innerClass={innerClass}
-                      currentValue={currentValue}
-                    />
+                    {this.renderLoader()}
                   </div>
                 )}
-                <Error
-                  error={error}
-                  renderError={renderError}
-                  themePreset={themePreset}
-                  theme={theme}
-                  isLoading={isLoading}
-                  innerClass={innerClass}
-                  currentValue={currentValue}
-                />
+                {this.renderError()}
                 {!this.hasCustomRenderer && isOpen && suggestionsList.length ? (
                   <ul
-                    css={suggestionsCss(themePreset, theme)}
+                    css={suggestionsCss}
                     className={getClassName(innerClass, 'list')}
                   >
                     {suggestionsList.slice(0, 10).map((item, index) => (
@@ -423,18 +503,7 @@ class SearchBox extends Component {
                     ))}
                   </ul>
                 ) : (
-                  <NoSuggestions
-                    themePreset={themePreset}
-                    theme={theme}
-                    isLoading={isLoading}
-                    renderNoSuggestion={renderNoSuggestion}
-                    innerClass={innerClass}
-                    error={error}
-                    renderError={renderError}
-                    suggestionsList={suggestionsList}
-                    isOpen={isOpen}
-                    currentValue={currentValue}
-                  />
+                  this.renderNoSuggestion()
                 )}
               </div>
             )}
@@ -455,25 +524,11 @@ class SearchBox extends Component {
               iconPosition={iconPosition}
               showIcon={showIcon}
               showClear={showClear}
-              themePreset={themePreset}
             />
-            <Icons
-              clearValue={this.clearValue}
-              iconPosition={iconPosition}
-              showClear={showClear}
-              clearIcon={clearIcon}
-              theme={theme}
-              currentValue={currentValue}
-              getMicInstance={getMicInstance}
-              renderMic={renderMic}
-              innerClass={innerClass}
-              enableVoiceSearch={showVoiceSearch}
-              onMicClick={this.searchBase && this.searchBase.onMicClick}
-              micStatus={this.searchBase && this.searchBase.micStatus}
-            />
+            {this.renderIcons()}
           </div>
         )}
-      </Container>
+      </div>
     );
   }
 }
@@ -496,10 +551,10 @@ SearchBox.propTypes = {
   icon: any,
   showClear: bool,
   clearIcon: any,
-  autoSuggest: bool,
+  autosuggest: bool,
   strictSelection: bool,
   defaultSuggestions: suggestions,
-  debounce: number,
+  debounce: wholeNumber,
   highlight: bool,
   highlightField,
   customHighlight: func,
@@ -522,13 +577,11 @@ SearchBox.propTypes = {
   defaultQuery: func,
   beforeValueChange: func,
   onQueryChange: func,
-  theme: object,
   className: string,
   loader: object,
   onBlur: func,
   onKeyPress: func,
   onKeyUp: func,
-  themePreset,
   onFocus: func,
   onKeyDown: func,
   autoFocus: bool,
@@ -543,7 +596,7 @@ SearchBox.defaultProps = {
   showIcon: true,
   iconPosition: 'right',
   showClear: false,
-  autoSuggest: true,
+  autosuggest: true,
   strictSelection: false,
   debounce: 0,
   highlight: false,
@@ -551,10 +604,8 @@ SearchBox.defaultProps = {
   showVoiceSearch: false,
   searchOperators: false,
   className: '',
-  themePreset: 'light',
   autoFocus: false,
   downShiftProps: {},
-  theme: {},
   URLParams: false
 };
 

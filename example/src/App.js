@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 
-import SearchBox from 'react-searchbox-zzzzz';
+import SearchBox from '@appbaseio/react-searchbox';
 
 export default class App extends Component {
   render() {

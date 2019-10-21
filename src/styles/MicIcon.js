@@ -1,7 +1,7 @@
 import styled from '@emotion/styled';
 
 const right = `
-  right: 35px;
+  right: 42px;
 `;
 
 const MicIcon = styled.div`
@@ -14,7 +14,7 @@ const MicIcon = styled.div`
     if (iconPosition === 'right') {
       return right;
     }
-    return null;
+    return 'right: 22px';
   }}
 `;
 

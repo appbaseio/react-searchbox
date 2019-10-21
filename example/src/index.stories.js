@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import SearchBox from 'react-searchbox-zzzzz';
+import SearchBox from '@appbaseio/react-searchbox';
 
 export default { title: 'SearchBox' };
 
@@ -20,20 +20,21 @@ export const withAllProps = () => (
         { field: 'original_title', weight: 1 },
         { field: 'original_title.search', weight: 3 }
       ]}
-      title='Search'
-      defaultValue='Songwriting'
-      placeholder='Search for books'
+      title="Search"
+      defaultValue="Songwriting"
+      placeholder="Search for books"
       autosuggest={true}
       defaultSuggestions={[
         { label: 'Songwriting', value: 'Songwriting' },
         { label: 'Musicians', value: 'Musicians' }
       ]}
       highlight={true}
-      highlightField='group_city'
-      queryFormat='or'
-      fuzziness='AUTO'
+      highlightField="group_city"
+      queryFormat="or"
+      fuzziness="AUTO"
       showClear
       showVoiceSearch
+      debounce={300}
     />
   </div>
 );
@@ -45,10 +46,7 @@ export const withResponsive = () => (
 );
 
 export const withNoSuggestion = () => (
-  <SearchBox
-    {...initConfig}
-    renderNoSuggestion={() => <p>No Suggestion</p>}
-  />
+  <SearchBox {...initConfig} renderNoSuggestion={() => <p>No Suggestion</p>} />
 );
 
 export const withCustomRender = () => (

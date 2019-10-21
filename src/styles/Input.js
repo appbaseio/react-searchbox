@@ -1,10 +1,5 @@
 import { css } from '@emotion/core';
 import styled from '@emotion/styled';
-import { dark } from './Theme';
-
-const alertBorder = ({ theme }) => css`
-  border: 1px solid ${theme.colors.alertColor};
-`;
 
 const input = css`
   width: 100%;
@@ -21,19 +16,8 @@ const input = css`
   }
 `;
 
-const darkInput = ({ theme }) => css`
-  background-color: ${theme.colors.backgroundColor};
-  color: ${theme.colors.textColor};
-  ${dark(theme)};
-
-  &:focus {
-    background-color: ${theme.colors.backgroundColor};
-  }
-`;
-
 const Input = styled.input`
   ${input}
-  ${({ themePreset }) => themePreset === 'dark' && darkInput};
 
   ${props =>
     props.showIcon &&
@@ -64,8 +48,6 @@ const Input = styled.input`
     css`
       padding-right: 48px;
     `};
-
-  ${props => props.alert && alertBorder};
 `;
 
 export default Input;
