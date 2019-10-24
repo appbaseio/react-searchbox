@@ -606,7 +606,8 @@ SearchBox.defaultProps = {
   className: '',
   autoFocus: false,
   downShiftProps: {},
-  URLParams: false
+  URLParams: false,
+  searchTerm: 'search'
 };
 
 export default SearchBox;
