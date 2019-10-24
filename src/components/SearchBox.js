@@ -61,7 +61,7 @@ class SearchBox extends Component {
     this._initSearchBase();
     if (this.props.URLParams) {
       this.setValue({
-        value: this.getSearchTerm(this.props.currUrl),
+        value: this.getSearchTerm(this.props.currentUrl),
         isOpen: false
       });
     }
@@ -73,7 +73,7 @@ class SearchBox extends Component {
       headers,
       fuzziness,
       nestedField,
-      currUrl,
+      currentUrl,
       URLParams
     } = this.props;
     this._applySetter(prevProps.dataField, dataField, 'setDataField');
@@ -81,9 +81,9 @@ class SearchBox extends Component {
     this._applySetter(prevProps.fuzziness, fuzziness, 'setFuzziness');
     this._applySetter(prevProps.nestedField, nestedField, 'setNestedField');
     // eslint-disable-next-line react/prop-types
-    if (URLParams && prevProps.currUrl !== currUrl) {
+    if (URLParams && prevProps.currentUrl !== currentUrl) {
       this.setValue({
-        value: this.getSearchTerm(currUrl),
+        value: this.getSearchTerm(currentUrl),
         isOpen: false
       });
     }

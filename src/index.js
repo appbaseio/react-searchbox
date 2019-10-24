@@ -14,7 +14,7 @@ const SearchBoxWithStyle = props => (
         }
       `}
     />
-    <SearchBox currUrl={window.location.href} {...props} />
+    <SearchBox currentUrl={window.location.href} {...props} />
   </div>
 );
 

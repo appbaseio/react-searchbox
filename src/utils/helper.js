@@ -58,4 +58,4 @@ export const getURLParameters = url => {
   return keyVal;
 };
 
-export const isEmpty = val => val == null || !(Object.keys(val) || val).length;
+export const isEmpty = val => !(val && val.length && Object.keys(val).length);
