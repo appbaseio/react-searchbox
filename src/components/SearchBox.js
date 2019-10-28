@@ -23,7 +23,9 @@ import {
   equals,
   getClassName,
   getComponent,
+  getURLParameters,
   hasCustomRenderer,
+  isEmpty,
   isFunction
 } from '../utils/helper';
 import Downshift from 'downshift';
@@ -57,19 +59,44 @@ class SearchBox extends Component {
 
   componentDidMount() {
     this._initSearchBase();
+    if (this.props.URLParams) {
+      this.setValue({
+        value: this.getSearchTerm(this.props.currentUrl),
+        isOpen: false
+      });
+    }
   }
 
   componentDidUpdate(prevProps) {
-    const { dataField, headers, fuzziness, nestedField } = this.props;
+    const {
+      dataField,
+      headers,
+      fuzziness,
+      nestedField,
+      currentUrl,
+      URLParams
+    } = this.props;
     this._applySetter(prevProps.dataField, dataField, 'setDataField');
     this._applySetter(prevProps.headers, headers, 'setHeaders');
     this._applySetter(prevProps.fuzziness, fuzziness, 'setFuzziness');
     this._applySetter(prevProps.nestedField, nestedField, 'setNestedField');
+    // eslint-disable-next-line react/prop-types
+    if (URLParams && prevProps.currentUrl !== currentUrl) {
+      this.setValue({
+        value: this.getSearchTerm(currentUrl),
+        isOpen: false
+      });
+    }
   }
 
   componentWillUnmount() {
     this.searchBase.unsubscribeToStateChanges(this.setStateValue);
   }
+
+  getSearchTerm = (url = '') => {
+    const searchParams = getURLParameters(url);
+    return searchParams && searchParams[this.props.searchTerm];
+  };
 
   _initSearchBase = () => {
     const {
@@ -95,7 +122,9 @@ class SearchBox extends Component {
 
     try {
       const transformQuery = query => {
-        if (defaultQuery) return defaultQuery(query, this.state.currentValue);
+        if (defaultQuery) {
+          return defaultQuery(query, this.state.currentValue);
+        }
         return Promise.resolve(query);
       };
 
@@ -195,7 +224,7 @@ class SearchBox extends Component {
   };
 
   setValue = ({ value, isOpen = true, ...rest }) => {
-    const { onChange, debounce } = this.props;
+    const { onChange, debounce, URLParams, searchTerm } = this.props;
     if (this.props.value) {
       if (onChange) {
         onChange(value, this.triggerQuery, rest.event);
@@ -205,6 +234,13 @@ class SearchBox extends Component {
       if (debounce > 0)
         this.searchBase.setValue(value, { triggerQuery: false });
       this.triggerSuggestionsQuery(value);
+      if (URLParams) {
+        window.history.replaceState(
+          !isEmpty(value) ? { [searchTerm]: value } : null,
+          null,
+          !isEmpty(value) ? `?${searchTerm}=${value}` : window.location.origin
+        );
+      }
     }
   };
 
@@ -548,7 +584,9 @@ SearchBox.propTypes = {
   onKeyUp: func,
   onFocus: func,
   onKeyDown: func,
-  autoFocus: bool
+  autoFocus: bool,
+  searchTerm: string,
+  URLParams: bool
 };
 
 SearchBox.defaultProps = {
@@ -567,7 +605,9 @@ SearchBox.defaultProps = {
   searchOperators: false,
   className: '',
   autoFocus: false,
-  downShiftProps: {}
+  downShiftProps: {},
+  URLParams: false,
+  searchTerm: 'search'
 };
 
 export default SearchBox;

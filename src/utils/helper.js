@@ -47,3 +47,15 @@ export const debounce = (fn, delay) => {
     }, delay);
   };
 };
+
+export const getURLParameters = url => {
+  const keyVal = {};
+  url.replace(/[?&]+([^=&]+)=([^&]*)/gi, function(m, key, value) {
+    key = decodeURIComponent(key);
+    value = decodeURIComponent(value);
+    keyVal[key] = value;
+  });
+  return keyVal;
+};
+
+export const isEmpty = val => !(val && val.length && Object.keys(val).length);
