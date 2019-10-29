@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 
 import SearchBox from '@appbaseio/react-searchbox';
+import { FaMicrophone } from 'react-icons/fa';
 
 export default class App extends Component {
   render() {
@@ -13,6 +14,7 @@ export default class App extends Component {
           showVoiceSearch
           searchTerm="search"
           URLParams
+          renderMic={() => <FaMicrophone style={{ marginTop: '4px' }} />}
         />
       </div>
     );
