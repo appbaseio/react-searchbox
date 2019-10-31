@@ -31,9 +31,7 @@ const Icon = props => {
       url =
         'https://cdn3.iconfinder.com/data/icons/glypho-music-and-sound/64/microphone-512.png';
   }
-  return (
-    <img {...rest} src={url} style={{ width: '24px', marginTop: '7px' }} />
-  );
+  return <img {...rest} src={url} style={{ width: '24px' }} />;
 };
 
 class Mic extends Component {
@@ -58,11 +56,13 @@ class Mic extends Component {
 
     const hasCustomRenderer = hcr(this.props);
 
-    if (hasCustomRenderer) return getComponent();
-
     return (
       <MicIcon iconPosition={iconPosition}>
-        <Icon className={className} onClick={onClick} status={status} />
+        {hasCustomRenderer ? (
+          getComponent()
+        ) : (
+          <Icon className={className} onClick={onClick} status={status} />
+        )}
       </MicIcon>
     );
   }

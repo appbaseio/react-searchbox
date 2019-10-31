@@ -1,7 +1,7 @@
 import styled from '@emotion/styled';
 
 const right = `
-  right: 42px;
+  right: 54px;
 `;
 
 const MicIcon = styled.div`
@@ -16,6 +16,8 @@ const MicIcon = styled.div`
     }
     return 'right: 22px';
   }}
+  width: 11px;
+  margin-top: 7px;
 `;
 
 export default MicIcon;
