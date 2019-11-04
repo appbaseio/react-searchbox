@@ -55,7 +55,6 @@ export const wholeNumber = function(props, propName, componentName) {
 };
 
 export const analyticsConfig = PropTypes.shape({
-  searchStateHeader: bool,
   emptyQuery: bool,
   suggestionAnalytics: bool,
   userId: string,

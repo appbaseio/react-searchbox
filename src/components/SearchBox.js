@@ -27,7 +27,8 @@ import {
   getURLParameters,
   hasCustomRenderer,
   isEmpty,
-  isFunction
+  isFunction,
+  withClickIds
 } from '../utils/helper';
 import Downshift from 'downshift';
 import Icons from './Icons';
@@ -92,7 +93,11 @@ class SearchBox extends Component {
         isOpen: false
       });
     }
-    if (analytics && prevProps.analyticsConfig !== analyticsConfig)
+    if (
+      analytics &&
+      JSON.stringify(prevProps.analyticsConfig) !==
+        JSON.stringify(analyticsConfig)
+    )
       this.setAnalytics(analyticsConfig);
   }
 
@@ -200,7 +205,8 @@ class SearchBox extends Component {
 
   setStateValue = ({ suggestions = {} }) => {
     this.setState({
-      suggestionsList: (suggestions.next && suggestions.next.data) || []
+      suggestionsList:
+        withClickIds(suggestions.next && suggestions.next.data) || []
     });
   };
 
@@ -293,7 +299,7 @@ class SearchBox extends Component {
 
   onSuggestionSelected = suggestion => {
     this.setValue({ value: suggestion && suggestion.value, isOpen: false });
-    this.triggerClickAnalytics(suggestion && suggestion.source._id);
+    this.triggerClickAnalytics(suggestion && suggestion._click_id);
   };
 
   handleStateChange = changes => {
