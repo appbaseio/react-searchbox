@@ -15,6 +15,11 @@ export default class App extends Component {
           searchTerm="search"
           URLParams
           renderMic={() => <FaMicrophone style={{ marginTop: '4px' }} />}
+          analytics
+          analyticsConfig={{
+            searchStateHeader: true,
+            suggestionAnalytics: true
+          }}
         />
       </div>
     );

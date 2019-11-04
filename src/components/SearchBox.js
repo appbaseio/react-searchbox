@@ -14,7 +14,8 @@ import {
   fuzziness,
   title,
   any,
-  wholeNumber
+  wholeNumber,
+  analyticsConfig
 } from '../utils/types';
 import Input from '../styles/Input';
 import Title from '../styles/Title';
@@ -26,7 +27,8 @@ import {
   getURLParameters,
   hasCustomRenderer,
   isEmpty,
-  isFunction
+  isFunction,
+  withClickIds
 } from '../utils/helper';
 import Downshift from 'downshift';
 import Icons from './Icons';
@@ -59,12 +61,14 @@ class SearchBox extends Component {
 
   componentDidMount() {
     this._initSearchBase();
-    if (this.props.URLParams) {
+    const { URLParams, currentUrl, analytics, analyticsConfig } = this.props;
+    if (URLParams) {
       this.setValue({
-        value: this.getSearchTerm(this.props.currentUrl),
+        value: this.getSearchTerm(currentUrl),
         isOpen: false
       });
     }
+    if (analytics) this.setAnalytics(analyticsConfig);
   }
 
   componentDidUpdate(prevProps) {
@@ -74,7 +78,9 @@ class SearchBox extends Component {
       fuzziness,
       nestedField,
       currentUrl,
-      URLParams
+      URLParams,
+      analytics,
+      analyticsConfig
     } = this.props;
     this._applySetter(prevProps.dataField, dataField, 'setDataField');
     this._applySetter(prevProps.headers, headers, 'setHeaders');
@@ -87,11 +93,27 @@ class SearchBox extends Component {
         isOpen: false
       });
     }
+    if (
+      analytics &&
+      JSON.stringify(prevProps.analyticsConfig) !==
+        JSON.stringify(analyticsConfig)
+    )
+      this.setAnalytics(analyticsConfig);
   }
 
   componentWillUnmount() {
     this.searchBase.unsubscribeToStateChanges(this.setStateValue);
   }
+
+  setAnalytics = config => {
+    if (!this.searchBase) return;
+    const { emptyQuery, userId, customEvents } = config;
+    const { analyticsInstance } = this.searchBase;
+    emptyQuery
+      ? analyticsInstance.enableEmptyQuery()
+      : analyticsInstance.disableEmptyQuery();
+    analyticsInstance.setUserID(userId).setCustomEvents(customEvents);
+  };
 
   getSearchTerm = (url = '') => {
     const searchParams = getURLParameters(url);
@@ -183,7 +205,8 @@ class SearchBox extends Component {
 
   setStateValue = ({ suggestions = {} }) => {
     this.setState({
-      suggestionsList: (suggestions.next && suggestions.next.data) || []
+      suggestionsList:
+        withClickIds(suggestions.next && suggestions.next.data) || []
     });
   };
 
@@ -195,10 +218,19 @@ class SearchBox extends Component {
       downshiftProps,
       data: suggestionsList,
       value: currentValue,
-      triggerClickAnalytics:
-        this.searchBase && this.searchBase.triggerClickAnalytics
+      triggerClickAnalytics: this.triggerClickAnalytics
     };
     return getComponent(data, this.props);
+  };
+
+  triggerClickAnalytics = (clickPosition, isSuggestion = true) => {
+    const { analytics, analyticsConfig } = this.props;
+    if (!analytics || !analyticsConfig.suggestionAnalytics || !this.searchBase)
+      return;
+    this.searchBase.analyticsInstance.registerClick(
+      clickPosition,
+      isSuggestion
+    );
   };
 
   get hasCustomRenderer() {
@@ -267,8 +299,7 @@ class SearchBox extends Component {
 
   onSuggestionSelected = suggestion => {
     this.setValue({ value: suggestion && suggestion.value, isOpen: false });
-    this.searchBase &&
-      this.searchBase.triggerClickAnalytics(suggestion && suggestion._click_id);
+    this.triggerClickAnalytics(suggestion && suggestion._click_id);
   };
 
   handleStateChange = changes => {
@@ -586,7 +617,8 @@ SearchBox.propTypes = {
   onKeyDown: func,
   autoFocus: bool,
   searchTerm: string,
-  URLParams: bool
+  URLParams: bool,
+  analyticsConfig
 };
 
 SearchBox.defaultProps = {
@@ -607,7 +639,8 @@ SearchBox.defaultProps = {
   autoFocus: false,
   downShiftProps: {},
   URLParams: false,
-  searchTerm: 'search'
+  searchTerm: 'search',
+  analyticsConfig: {}
 };
 
 export default SearchBox;

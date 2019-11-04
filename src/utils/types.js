@@ -53,3 +53,10 @@ export const wholeNumber = function(props, propName, componentName) {
     );
   }
 };
+
+export const analyticsConfig = PropTypes.shape({
+  emptyQuery: bool,
+  suggestionAnalytics: bool,
+  userId: string,
+  customEvents: object
+});
