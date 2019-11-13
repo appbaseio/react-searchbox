@@ -139,7 +139,9 @@ class SearchBox extends Component {
       onValueChange,
       onSuggestions,
       onError,
-      onResults
+      onResults,
+      aggregationField,
+      onAggregationData
     } = this.props;
 
     try {
@@ -154,6 +156,7 @@ class SearchBox extends Component {
         index: app,
         url,
         dataField,
+        aggregationField,
         credentials,
         analytics,
         headers,
@@ -175,6 +178,7 @@ class SearchBox extends Component {
         if (onValueChange) onValueChange(next, prev);
       };
       this.searchBase.onSuggestions = onSuggestions;
+      this.searchBase.onAggregationData = onAggregationData;
       this.searchBase.onError = error => {
         this.setState({ error });
         if (onError) onError(error);
@@ -571,6 +575,7 @@ SearchBox.propTypes = {
   analytics: bool.isRequired,
   headers: object,
   dataField: dataField,
+  aggregationField: string,
   nestedField: string,
   title: string,
   defaultValue: string,
@@ -601,6 +606,7 @@ SearchBox.propTypes = {
   onChange: func,
   onValueChange: func,
   onSuggestions: func,
+  onAggregationData: func,
   onError: func,
   onResults: func,
   innerClass: object,
