@@ -21,6 +21,7 @@ export default class App extends Component {
           }}
           style={{width: '50%', margin: '100px'}}
           showClear
+          // showIcon={false}
           // iconPosition="left"
         />
       </div>

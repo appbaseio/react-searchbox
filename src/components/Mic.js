@@ -40,7 +40,8 @@ class Mic extends Component {
       nextProps.iconPosition !== this.props.iconPosition ||
       nextProps.className !== this.props.className ||
       nextProps.status !== this.props.status ||
-      nextProps.applyClearStyle !== this.props.applyClearStyle
+      nextProps.applyClearStyle !== this.props.applyClearStyle ||
+      nextProps.showIcon !== this.props.showIcon
     );
   }
 
@@ -50,7 +51,8 @@ class Mic extends Component {
       className,
       onClick,
       status,
-      applyClearStyle
+      applyClearStyle,
+      showIcon
     } = this.props;
 
     const getComponent = () => {
@@ -64,7 +66,11 @@ class Mic extends Component {
     const hasCustomRenderer = hcr(this.props);
 
     return (
-      <MicIcon iconPosition={iconPosition} showClear={applyClearStyle}>
+      <MicIcon
+        showIcon={showIcon}
+        iconPosition={iconPosition}
+        showClear={applyClearStyle}
+      >
         {hasCustomRenderer ? (
           getComponent()
         ) : (

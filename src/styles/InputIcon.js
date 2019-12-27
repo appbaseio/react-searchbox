@@ -29,6 +29,7 @@ const InputIcon = styled.div`
     return null;
   }};
   ${({ clearIcon }) => clearIcon && clear};
+  ${({ showIcon }) => !showIcon && 'padding-right:10px'};
 
   svg.search-icon {
     fill: #0b6aff;

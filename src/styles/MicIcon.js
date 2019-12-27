@@ -17,6 +17,11 @@ const MicIcon = styled.div`
     }
     return null;
   }}
+  ${({ showIcon, showClear }) => {
+    if (!showIcon && showClear) return 'right: 32px;';
+    if (!showIcon && !showClear) return 'right: 10px;';
+    return null;
+  }}
   width: 11px;
   margin-top: 7px;
 `;

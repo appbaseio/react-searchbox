@@ -37,6 +37,7 @@ const Icons = props => {
           onClick={clearValue}
           iconPosition="right"
           clearIcon={iconPosition === 'right'}
+          showIcon={showIcon}
         >
           {clearIcon || <CancelSvg />}
         </InputIcon>
@@ -50,9 +51,14 @@ const Icons = props => {
           onClick={onMicClick}
           status={micStatus}
           applyClearStyle={!!currentValue && showClear}
+          showIcon={showIcon}
         />
       )}
-      <InputIcon onClick={handleSearchIconClick} iconPosition={iconPosition}>
+      <InputIcon
+        showIcon={showIcon}
+        onClick={handleSearchIconClick}
+        iconPosition={iconPosition}
+      >
         <SearchIcon showIcon={showIcon} icon={icon} />
       </InputIcon>
     </div>
