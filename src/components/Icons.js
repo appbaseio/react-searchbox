@@ -49,6 +49,7 @@ const Icons = props => {
           className={getClassName(innerClass, 'mic') || null}
           onClick={onMicClick}
           status={micStatus}
+          applyClearStyle={!!currentValue && showClear}
         />
       )}
       <InputIcon onClick={handleSearchIconClick} iconPosition={iconPosition}>

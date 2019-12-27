@@ -14,12 +14,14 @@ export default class App extends Component {
           showVoiceSearch
           searchTerm="search"
           URLParams
-          renderMic={() => <FaMicrophone style={{ marginTop: '4px' }} />}
           analytics
           analyticsConfig={{
             searchStateHeader: true,
             suggestionAnalytics: true
           }}
+          style={{width: '50%', margin: '100px'}}
+          showClear
+          // iconPosition="left"
         />
       </div>
     );

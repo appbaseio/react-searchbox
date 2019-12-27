@@ -1,20 +1,21 @@
 import styled from '@emotion/styled';
 
 const right = `
-  right: 54px;
+  right: 35px;
 `;
 
 const MicIcon = styled.div`
   height: 40px;
   position: absolute;
-  top: calc(50% - 20px);
+  top: calc(50% - 17px);
   cursor: pointer;
-  right: 0;
-  ${({ iconPosition }) => {
-    if (iconPosition === 'right') {
+  right: 10px;
+  ${({ iconPosition, showClear }) => {
+    if (showClear && iconPosition !== 'left') return 'right: 51px;';
+    if (iconPosition === 'right' || showClear) {
       return right;
     }
-    return 'right: 22px';
+    return null;
   }}
   width: 11px;
   margin-top: 7px;
