@@ -18,7 +18,7 @@ const clear = `
 
 const InputIcon = styled.div`
   position: absolute;
-  top: 13px;
+  top: ${({ isClearIcon }) => (isClearIcon ? '12px' : '13px')};
   cursor: pointer;
   ${({ iconPosition }) => {
     if (iconPosition === 'left') {

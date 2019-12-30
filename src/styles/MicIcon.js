@@ -7,9 +7,9 @@ const right = `
 const MicIcon = styled.div`
   height: 40px;
   position: absolute;
-  top: calc(50% - 17px);
+  top: 11px;
   cursor: pointer;
-  right: 10px;
+  right: 15px;
   ${({ iconPosition, showClear }) => {
     if (showClear && iconPosition !== 'left') return 'right: 51px;';
     if (iconPosition === 'right' || showClear) {
@@ -19,11 +19,10 @@ const MicIcon = styled.div`
   }}
   ${({ showIcon, showClear }) => {
     if (!showIcon && showClear) return 'right: 32px;';
-    if (!showIcon && !showClear) return 'right: 10px;';
+    if (!showIcon && !showClear) return 'right: 15px;';
     return null;
   }}
   width: 11px;
-  margin-top: 7px;
 `;
 
 export default MicIcon;

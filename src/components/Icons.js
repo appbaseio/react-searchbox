@@ -38,6 +38,7 @@ const Icons = props => {
           iconPosition="right"
           clearIcon={iconPosition === 'right'}
           showIcon={showIcon}
+          isClearIcon
         >
           {clearIcon || <CancelSvg />}
         </InputIcon>
