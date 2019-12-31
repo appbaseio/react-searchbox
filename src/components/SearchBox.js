@@ -2,20 +2,20 @@
 import { jsx } from '@emotion/core';
 import { Component } from 'react';
 import {
-  bool,
-  string,
-  object,
-  func,
-  dataField,
-  position,
-  suggestions,
-  highlightField,
-  queryFormat,
-  fuzziness,
-  title,
+  analyticsConfig,
   any,
-  wholeNumber,
-  analyticsConfig
+  bool,
+  dataField,
+  func,
+  fuzziness,
+  highlightField,
+  object,
+  position,
+  queryFormat,
+  string,
+  suggestions,
+  title,
+  wholeNumber
 } from '../utils/types';
 import Input from '../styles/Input';
 import Title from '../styles/Title';
@@ -208,21 +208,36 @@ class SearchBox extends Component {
   };
 
   setStateValue = ({ suggestions = {} }) => {
+    const { time, hidden, data, promoted, numberOfResults, promotedData } =
+      suggestions.next || {};
     this.setState({
-      suggestionsList:
-        withClickIds(suggestions.next && suggestions.next.data) || []
+      suggestionsList: withClickIds(suggestions.next && data) || [],
+      promotedData,
+      resultStats: {
+        time,
+        hidden,
+        promoted,
+        numberOfResults
+      }
     });
   };
 
   getComponent = (downshiftProps = {}) => {
-    const { currentValue, suggestionsList, error, loading } = this.state;
+    const {
+      currentValue,
+      suggestionsList,
+      error,
+      loading,
+      resultStats
+    } = this.state;
     const data = {
       error,
       loading,
       downshiftProps,
       data: suggestionsList,
       value: currentValue,
-      triggerClickAnalytics: this.triggerClickAnalytics
+      triggerClickAnalytics: this.triggerClickAnalytics,
+      resultStats
     };
     return getComponent(data, this.props);
   };
@@ -646,7 +661,10 @@ SearchBox.defaultProps = {
   downShiftProps: {},
   URLParams: false,
   searchTerm: 'search',
-  analyticsConfig: {}
+  analyticsConfig: {
+    searchStateHeader: true,
+    suggestionAnalytics: true
+  }
 };
 
 export default SearchBox;
