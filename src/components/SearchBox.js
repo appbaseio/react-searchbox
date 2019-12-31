@@ -228,7 +228,8 @@ class SearchBox extends Component {
       suggestionsList,
       error,
       loading,
-      resultStats
+      resultStats,
+      promotedData
     } = this.state;
     const data = {
       error,
@@ -237,6 +238,7 @@ class SearchBox extends Component {
       data: suggestionsList,
       value: currentValue,
       triggerClickAnalytics: this.triggerClickAnalytics,
+      promotedData,
       resultStats
     };
     return getComponent(data, this.props);
