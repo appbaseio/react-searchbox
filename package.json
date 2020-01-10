@@ -1,6 +1,6 @@
 {
   "name": "@appbaseio/react-searchbox",
-  "version": "0.1.0-alpha",
+  "version": "0.1.1-alpha",
   "description": "React library kit based on ReactiveSearch's DataSearch",
   "license": "MIT",
   "repository": {
